@@ -10678,6 +10678,25 @@ input[type="range"].det-cell-slider::-moz-range-track {
   margin: 0.25rem 0;
 }
 
+.docs-card-formula-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-subtle) transparent;
+}
+
+.docs-card-formula-box .katex-display {
+  margin: 0.15rem 0;
+}
+
+.docs-card-formula-box .katex {
+  font-size: 0.96em;
+}
+
 .math-rendered {
   color: inherit;
 }

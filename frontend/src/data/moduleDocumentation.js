@@ -2094,85 +2094,106 @@ export const MODULE_DOCUMENTATION = {
     code: '22',
     title: 'QR Decomposition — Orthogonality, Gram–Schmidt & Image Reconstruction',
     category: 'QR Decomposition',
-    oneLiner: 'Factorize matrices into orthonormal columns Q and upper-triangular weights R to resolve vectors and reconstruct grayscale images.',
-    formula: 'A = Q R, \\quad Q^T Q = I, \\quad u_k = a_k - \\sum_{j=1}^{k-1} \\frac{u_j^T a_k}{u_j^T u_j} u_j',
+    oneLiner: 'Factorize matrices into orthonormal columns $Q$ and upper-triangular weights $R$ to resolve vectors and reconstruct grayscale images.',
+    formula: 'A = Q R, \\quad Q^T Q = I, \\quad \\vec{u}_k = \\vec{a}_k - \\sum_{j < k} \\text{proj}_{\\vec{u}_j}(\\vec{a}_k)',
     formulaDisplay: 'A = QR,  Q^T Q = I,  u_k = a_k - ∑ proj_{u_j}(a_k)',
     whatIsThis:
-      'QR Decomposition is a cornerstone matrix factorization that expresses any matrix A as the product of an orthogonal matrix Q (with mutually perpendicular unit columns) and an upper-triangular matrix R. While standard basis vectors like (1, 0) and (0, 1) are perpendicular, arbitrary vectors in data science and image processing rarely are. The Gram–Schmidt process systematically strips away redundant parallel projections, yielding a pristine orthonormal basis Q and the reconstruction weights R.',
+      'QR Decomposition is a cornerstone matrix factorization that expresses any matrix $A$ as the product of an orthogonal matrix $Q$ (with mutually perpendicular unit columns) and an upper-triangular matrix $R$. While standard coordinate axes $(1, 0)$ and $(0, 1)$ are perpendicular, arbitrary data vectors in computer vision and machine learning rarely are. The Gram–Schmidt process systematically strips away redundant parallel shadows, yielding an orthonormal basis $Q$ and reconstruction weights $R$.',
     whyNeedIt:
-      'Perpendicular unit vectors eliminate numerical instability and redundancy. In digital image processing, a grayscale pixel matrix can be decomposed into an orthonormal spatial feature basis Q and mixing weights R, answering the foundational question: "Can an image be represented using perpendicular unit vectors and perfectly reconstructed?" Yes! QR decomposition is also the computational engine behind numerically stable linear least-squares regression, computer graphics ray reflections, and the QR algorithm for calculating matrix eigenvalues.',
+      'Perpendicular unit vectors eliminate numerical instability and redundancy. In digital image processing, a grayscale pixel matrix can be decomposed into an orthonormal spatial feature basis $Q$ and mixing weights $R$, answering the foundational question: "Can an image be represented using perpendicular unit vectors and perfectly reconstructed?" Yes! QR decomposition is also the computational engine behind numerically stable linear least-squares regression, ray optics reflections, and eigenvalue algorithms.',
     subsections: [
       {
-        title: 'Module 1: What Does Perpendicular Mean?',
+        title: 'Module 1: What Does Perpendicular Mean? (Orthogonality)',
         content:
-          'Two vectors a and b are perpendicular (orthogonal) if and only if their dot product is zero: a · b = a_x b_x + a_y b_y = 0. For example, a = [3, 1]ᵀ and b = [-1, 3]ᵀ yield (3)(-1) + (1)(3) = -3 + 3 = 0, forming an exact 90° angle. Perpendicular vectors have zero correlation—neither vector casts any projection onto the other.',
-        formula: 'a \\cdot b = a_x b_x + a_y b_y = 0 \\iff \\theta = 90^\\circ'
+          'Two vectors $\\vec{a}$ and $\\vec{b}$ are perpendicular (orthogonal) if and only if their inner dot product is exactly zero: $\\vec{a} \\cdot \\vec{b} = a_x b_x + a_y b_y = 0$. They form an exact $90^\\circ$ angle and have zero mutual correlation.',
+        points: [
+          'Sample Vectors: $\\vec{a} = [3, 1]^T$ and $\\vec{b} = [-1, 3]^T$.',
+          'Inner Product: $(3)(-1) + (1)(3) = -3 + 3 = 0$.',
+          'Geometric Meaning: Angle is $\\theta = 90^\\circ$. Neither vector casts any shadow or projection onto the other.'
+        ],
+        formula: '\\vec{a} \\cdot \\vec{b} = 0 \\iff \\theta = 90^\\circ'
       },
       {
-        title: 'Module 2: Projection — How Much of One Vector Lies Along Another?',
+        title: 'Module 2: Vector Projection & Orthogonal Decomposition',
         content:
-          'To resolve vector b along base vector a, we compute the orthogonal projection: proj_a(b) = ((aᵀ b) / (aᵀ a)) a. For a = [3, 1]ᵀ and b = [2, 3]ᵀ, aᵀ b = 9 and aᵀ a = 10, giving proj_a(b) = 0.9 × [3, 1]ᵀ = [2.7, 0.9]ᵀ. The remaining perpendicular component is b_⊥ = b - proj_a(b) = [-0.7, 2.1]ᵀ. Together, they form a right triangle: b = proj_a(b) + b_⊥ with (proj_a(b)) · b_⊥ = 0.',
-        formula: '\\text{proj}_a(b) = \\frac{a^T b}{a^T a} a, \\quad b_\\perp = b - \\text{proj}_a(b)'
+          'To determine how much of vector $\\vec{b}$ lies along base vector $\\vec{a}$, we compute the orthogonal projection $\\text{proj}_{\\vec{a}}(\\vec{b})$. The perpendicular remainder $\\vec{b}_\\perp$ forms an exact right triangle.',
+        points: [
+          'Parallel Projection: $\\text{proj}_{\\vec{a}}(\\vec{b}) = \\frac{\\vec{a}^T \\vec{b}}{\\vec{a}^T \\vec{a}} \\vec{a} = \\frac{9}{10} [3, 1]^T = [2.7, 0.9]^T$.',
+          'Perpendicular Remainder: $\\vec{b}_\\perp = \\vec{b} - \\text{proj}_{\\vec{a}}(\\vec{b}) = [2, 3]^T - [2.7, 0.9]^T = [-0.7, 2.1]^T$.',
+          'Orthogonal Sum: $\\vec{b} = \\text{proj}_{\\vec{a}}(\\vec{b}) + \\vec{b}_\\perp$ with $\\text{proj}_{\\vec{a}}(\\vec{b}) \\cdot \\vec{b}_\\perp = 0$.'
+        ],
+        formula: '\\vec{b} = \\text{proj}_{\\vec{a}}(\\vec{b}) + \\vec{b}_\\perp, \\quad \\vec{b}_\\perp \\cdot \\vec{a} = 0'
       },
       {
         title: 'Module 3: Gram–Schmidt Orthogonalization (2D & 3D)',
         content:
-          'Given linearly independent vectors a₁, a₂, ..., the Gram–Schmidt algorithm systematically constructs orthogonal vectors u_k and orthonormal vectors q_k:\n' +
-          '1. Set u₁ = a₁\n' +
-          '2. Subtract the projection: u₂ = a₂ - proj_{u₁}(a₂)\n' +
-          '3. For 3D: u₃ = a₃ - proj_{u₁}(a₃) - proj_{u₂}(a₃)\n' +
-          '4. Normalize each vector to unit length: q_k = u_k / ||u_k||.\n' +
-          'For a₁ = [2, 1]ᵀ and a₂ = [1, 2]ᵀ, subtracting the projection gives u₂ = [-0.6, 1.2]ᵀ, which is exactly perpendicular to u₁.',
-        formula: 'u_1 = a_1, \\quad u_2 = a_2 - \\frac{u_1^T a_2}{u_1^T u_1} u_1, \\quad q_i = \\frac{u_i}{\\|u_i\\|}'
+          'Given linearly independent vectors $\\vec{a}_1, \\vec{a}_2, \\dots$, Gram–Schmidt constructs mutually perpendicular directions $\\vec{u}_k$ by subtracting prior projections, then scales each to unit length $\\hat{q}_k$.',
+        points: [
+          'Step 1 (First Axis): $\\vec{u}_1 = \\vec{a}_1 = [2, 1]^T$.',
+          'Step 2 (Subtract Projection): $\\vec{u}_2 = \\vec{a}_2 - \\text{proj}_{\\vec{u}_1}(\\vec{a}_2) = [1, 2]^T - [1.6, 0.8]^T = [-0.6, 1.2]^T$.',
+          'Step 3 (3D Mutual Orthogonality): $\\vec{u}_3 = \\vec{a}_3 - \\text{proj}_{\\vec{u}_1}(\\vec{a}_3) - \\text{proj}_{\\vec{u}_2}(\\vec{a}_3)$.',
+          'Step 4 (Normalize): $\\hat{q}_k = \\frac{\\vec{u}_k}{\\|\\vec{u}_k\\|}$, yielding unit length $\\|\\hat{q}_k\\| = 1$.'
+        ],
+        formula: '\\vec{u}_k = \\vec{a}_k - \\sum_{j < k} \\text{proj}_{\\vec{u}_j}(\\vec{a}_k), \\quad \\hat{q}_k = \\frac{\\vec{u}_k}{\\|\\vec{u}_k\\|}'
       },
       {
-        title: 'Module 4: Building Q and R Matrices (A = QR)',
+        title: 'Module 4: Matrix Factorization A = QR & Verification',
         content:
-          'Collecting the orthonormal unit vectors q_i as columns forms matrix Q. Because its columns are orthonormal, Qᵀ Q = I. The upper-triangular matrix R stores the projection lengths: R_{ij} = q_iᵀ a_j for i ≤ j, with zeros below the diagonal. Multiplying Q × R reconstructs the original matrix A with zero loss.',
-        formula: 'A = Q R, \\quad Q^T Q = I, \\quad R = Q^T A = \\begin{bmatrix} r_{11} & r_{12} \\\\ 0 & r_{22} \\end{bmatrix}'
+          'Arranging the orthonormal unit vectors as columns forms matrix $Q$. Because columns are orthonormal, $Q^T Q = I$. Upper-triangular matrix $R = Q^T A$ stores the projection coefficients.',
+        points: [
+          'Orthonormal Transpose: $Q^T Q = I \\implies Q^{-1} = Q^T$.',
+          'Triangular Coordinates: $R_{ij} = \\hat{q}_i^T \\vec{a}_j$ for $i \\le j$, with exact zeros below the diagonal.',
+          'Exact Reproduction: Matrix multiplication $Q \\times R = A$ recovers original columns with zero error.'
+        ],
+        formula: 'A = Q R \\quad (Q^T Q = I, \\; R = Q^T A)'
       },
       {
         title: 'Module 5: Representing Digital Images with Perpendicular Vectors',
         content:
-          'Can we represent an image matrix using perpendicular unit vectors? Yes! When applied to a 2×2 or 3×3 grayscale image matrix A, Q provides an orthogonal basis of spatial column patterns with zero redundant overlap, and R provides the upper-triangular blending coefficients. Computing Q × R reconstructs every pixel with 100% mathematical precision.',
-        formula: 'A_{\\text{image}} = Q R \\implies \\text{Reconstructed Image} = Q \\times R'
+          'A digital grayscale image is a 2D matrix $A \\in \\mathbb{R}^{m \\times n}$. Decomposing $A = Q \\times R$ yields orthogonal spatial feature directions $Q$ and intensity mixing weights $R$.',
+        points: [
+          'Central Question: Can an image be represented using perpendicular unit vectors and reconstructed? YES!',
+          'Zero Redundancy: Columns of $Q$ have zero mutual correlation ($\\hat{q}_i \\cdot \\hat{q}_j = 0$).',
+          'Lossless Recovery: Multiplying $A_{\\text{recon}} = Q \\times R$ reconstructs all pixels with 100% fidelity ($\\Delta = 0.00$).'
+        ],
+        formula: 'A_{\\text{image}} = Q R \\implies A_{\\text{recon}} = Q R \\quad (\\Delta = 0.00)'
       }
     ],
     howItWorks: [
       {
         step: 1,
         title: 'Check Linear Independence',
-        description: 'Ensure column vectors {a₁, a₂, ..., a_n} are linearly independent and span the column space.'
+        description: 'Verify that column vectors $\\{\\vec{a}_1, \\vec{a}_2, \\dots, \\vec{a}_n\\}$ are linearly independent and span the column space.'
       },
       {
         step: 2,
         title: 'Subtract Parallel Projections',
-        description: 'For each vector a_k, subtract its projections onto all preceding orthogonal vectors: u_k = a_k - ∑ proj_{u_j}(a_k).'
+        description: 'For each vector $\\vec{a}_k$, subtract projections onto all previous orthogonal vectors: $\\vec{u}_k = \\vec{a}_k - \\sum_{j < k} \\text{proj}_{\\vec{u}_j}(\\vec{a}_k)$.'
       },
       {
         step: 3,
         title: 'Normalize to Unit Vectors',
-        description: 'Divide each orthogonal vector by its Euclidean length: q_k = u_k / ||u_k|| to form orthonormal columns.'
+        description: 'Divide each orthogonal direction by its Euclidean norm: $\\hat{q}_k = \\frac{\\vec{u}_k}{\\|\\vec{u}_k\\|}$, ensuring $\\|\\hat{q}_k\\| = 1$.'
       },
       {
         step: 4,
-        title: 'Construct Q and R Matrices',
-        description: 'Pack q_k into Q and projection weights into upper-triangular R (R_{ij} = q_i^T a_j), yielding exact reconstruction A = Q × R.'
+        title: 'Assemble Q and R Matrices',
+        description: 'Pack $\\hat{q}_k$ into $Q$ and projection weights into upper-triangular $R$ ($R_{ij} = \\hat{q}_i^T \\vec{a}_j$), yielding $A = Q \\times R$.'
       }
     ],
     symbols: [
-      { symbol: 'A', name: 'Original Matrix', meaning: 'The input matrix or digital grayscale image whose columns are to be decomposed.' },
-      { symbol: 'Q', name: 'Orthonormal Basis Matrix', meaning: 'Matrix of mutually perpendicular unit column vectors satisfying Q^T Q = I.' },
-      { symbol: 'R', name: 'Upper-Triangular Weight Matrix', meaning: 'Triangular matrix storing projection lengths and mixing coordinates with zeros below the diagonal.' },
-      { symbol: 'proj_a(b)', name: 'Orthogonal Projection', meaning: 'The component of vector b that lies directly parallel along vector a: ((a^T b)/(a^T a)) a.' },
-      { symbol: 'b_⊥', name: 'Orthogonal Complement', meaning: 'The perpendicular remainder vector b - proj_a(b), strictly orthogonal to a.' },
-      { symbol: 'a · b', name: 'Dot Product', meaning: 'Inner product evaluating to zero if and only if two vectors are perpendicular (90°).' }
+      { symbol: 'A', name: 'Original Matrix', meaning: 'The input matrix or digital image whose columns are to be decomposed: $A \\in \\mathbb{R}^{m \\times n}$.' },
+      { symbol: 'Q', name: 'Orthonormal Basis Matrix', meaning: 'Matrix of mutually perpendicular unit columns satisfying $Q^T Q = I$.' },
+      { symbol: 'R', name: 'Upper-Triangular Matrix', meaning: 'Triangular matrix storing projection lengths ($R_{ij} = \\hat{q}_i^T \\vec{a}_j$) with zeros below the diagonal.' },
+      { symbol: '\\text{proj}_{\\vec{a}}(\\vec{b})', name: 'Orthogonal Projection', meaning: 'Parallel component of $\\vec{b}$ cast onto $\\vec{a}$: $\\frac{\\vec{a}^T \\vec{b}}{\\vec{a}^T \\vec{a}} \\vec{a}$.' },
+      { symbol: '\\vec{b}_\\perp', name: 'Orthogonal Complement', meaning: 'Perpendicular remainder vector $\\vec{b} - \\text{proj}_{\\vec{a}}(\\vec{b})$ strictly perpendicular to $\\vec{a}$.' },
+      { symbol: '\\vec{a} \\cdot \\vec{b}', name: 'Dot Product', meaning: 'Inner product evaluating to zero if and only if two vectors form an exact $90^\\circ$ angle.' }
     ],
     additionalFormulas: [
-      { label: 'Gram-Schmidt General Step', formula: 'u_k = a_k - \\sum_{j=1}^{k-1} \\frac{u_j^T a_k}{u_j^T u_j} u_j', desc: 'Recursive projection subtraction for the k-th orthogonal vector.' },
+      { label: 'Gram-Schmidt General Step', formula: '\\vec{u}_k = \\vec{a}_k - \\sum_{j < k} \\text{proj}_{\\vec{u}_j}(\\vec{a}_k)', desc: 'Recursive projection subtraction for the k-th orthogonal vector.' },
       { label: 'Orthonormal Property', formula: 'Q^T Q = I \\implies Q^{-1} = Q^T', desc: 'The transpose of an orthonormal square matrix is its exact inverse.' },
       { label: 'Upper-Triangular Inversion', formula: 'R = Q^T A', desc: 'Left-multiplying A by Q^T isolates R because Q^T Q = I.' },
-      { label: 'Linear Least Squares Solution', formula: 'A x = b \\implies R x = Q^T b', desc: 'Direct back-substitution solver without calculating normal equations.' }
+      { label: 'Linear Least Squares Solution', formula: 'A \\vec{x} = \\vec{b} \\implies R \\vec{x} = Q^T \\vec{b}', desc: 'Direct back-substitution solver without calculating normal equations.' }
     ],
     workedExample: {
       title: 'Gram–Schmidt Orthogonalization of A = [[2, 1], [1, 2]]',
@@ -2200,12 +2221,12 @@ export const MODULE_DOCUMENTATION = {
       output: 'Matrix A is factored into orthonormal Q (Qᵀ Q = I) and upper-triangular R with exact reconstruction.'
     },
     observations: [
-      'Two vectors are perpendicular if and only if their dot product a · b = 0.',
-      'Vector projection decomposes any vector b into b = proj_a(b) + b_⊥, where b_⊥ is strictly perpendicular to a.',
-      'Gram–Schmidt converts any linearly independent vector set into a mutually orthogonal set by subtracting prior projections.',
-      'Normalizing the orthogonal vectors produces orthonormal matrix Q where Qᵀ Q = I.',
-      'Upper-triangular matrix R stores the projection lengths and coordinates, making QR multiplication reproduce the exact original matrix.',
-      'Digital images can be completely represented and losslessly reconstructed using perpendicular unit column vectors.'
+      'Two vectors are perpendicular if and only if their inner dot product $\\vec{a} \\cdot \\vec{b} = 0$.',
+      'Vector projection decomposes any vector into $\\vec{b} = \\text{proj}_{\\vec{a}}(\\vec{b}) + \\vec{b}_\\perp$, where $\\vec{b}_\\perp$ is strictly perpendicular to $\\vec{a}$.',
+      'Gram–Schmidt converts any set of independent vectors into a mutually orthogonal basis by subtracting prior projections.',
+      'Normalizing the orthogonal vectors produces orthonormal matrix $Q$ where $Q^T Q = I$ and $Q^{-1} = Q^T$.',
+      'Upper-triangular matrix $R$ stores the projection coefficients, ensuring multiplication $Q \\times R = A$ recovers the exact original matrix.',
+      'Grayscale digital images can be completely represented and losslessly reconstructed using perpendicular unit column vectors (reconstruction error $\\Delta = 0.00$).'
     ],
     applications: [
       { name: 'Linear Least Squares & Regression', desc: 'Solving overdetermined systems Ax = b stably via Rx = Qᵀ b without squaring condition numbers in normal equations.' },
@@ -2217,7 +2238,7 @@ export const MODULE_DOCUMENTATION = {
       'Orthogonal vectors have zero dot product and zero redundant mutual projection.',
       'Vector projection resolves any vector into parallel and perpendicular components.',
       'Gram–Schmidt sequentially strips out parallel shadows to build an orthonormal coordinate frame.',
-      'QR decomposition (A = QR) represents any matrix or image as an orthonormal basis Q scaled by triangular weights R.'
+      'QR decomposition ($A = QR$) represents any matrix or image as an orthonormal basis $Q$ scaled by triangular weights $R$.'
     ]
   }
 };

@@ -96,6 +96,41 @@ export function MathView({ math, displayMode = false, className = '' }) {
   }
 }
 
+export function renderFormattedContent(text) {
+  if (!text) return null;
+  if (typeof text !== 'string') return text;
+  
+  if (!text.includes('$')) {
+    const cleaned = text
+      .replace(/\\le\b/g, '≤')
+      .replace(/\\ge\b/g, '≥')
+      .replace(/\\approx\b/g, '≈')
+      .replace(/\\cdot\b/g, '·')
+      .replace(/\\times\b/g, '×')
+      .replace(/\\theta\b/g, 'θ')
+      .replace(/\\Delta\b/g, 'Δ')
+      .replace(/\\perp\b/g, '⟂')
+      .replace(/b_⊥/g, 'b⟂')
+      .replace(/\\implies\b/g, '⟹');
+    return cleaned;
+  }
+
+  const parts = text.split(/\$([^$]+)\$/g);
+  return parts.map((part, idx) => {
+    if (idx % 2 === 1) {
+      return (
+        <span key={idx} className="inline-math-wrap" style={{ display: 'inline', padding: '0 0.12rem' }}>
+          <MathView math={part} displayMode={false} />
+        </span>
+      );
+    }
+    return part
+      .replace(/\\le\b/g, '≤')
+      .replace(/\\ge\b/g, '≥')
+      .replace(/b_⊥/g, 'b⟂');
+  });
+}
+
 export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [activeTab, setActiveTab] = useState('concept'); // 'concept' | 'math' | 'applications'
@@ -208,7 +243,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                       <HelpCircle size={16} className="docs-subcard-icon" />
                       <h3 className="docs-subcard-title">What Is This?</h3>
                     </div>
-                    <p className="docs-prose">{doc.whatIsThis}</p>
+                    <p className="docs-prose">{renderFormattedContent(doc.whatIsThis)}</p>
                   </div>
 
                   {/* Right: Why Do We Need It? */}
@@ -217,7 +252,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                       <Sparkles size={16} className="docs-subcard-icon" />
                       <h3 className="docs-subcard-title">Why Do We Need It?</h3>
                     </div>
-                    <p className="docs-prose">{doc.whyNeedIt}</p>
+                    <p className="docs-prose">{renderFormattedContent(doc.whyNeedIt)}</p>
                   </div>
                 </div>
 
@@ -227,23 +262,40 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     <h3 className="docs-steps-heading" style={{ margin: '0.2rem 0 0 0' }}>
                       Core Working Principles &amp; Mathematical Concepts
                     </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: doc.subsections.length > 1 ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: '0.75rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: subsections.length > 1 ? 'repeat(auto-fit, minmax(340px, 1fr))' : '1fr', gap: '0.85rem' }}>
                       {subsections.map((sub, sIdx) => (
                         <div key={sIdx} className="docs-subcard">
                           <div className="docs-subcard-header">
                             <Compass size={15} className="docs-subcard-icon" />
                             <h4 className="docs-subcard-title">{sub.title}</h4>
                           </div>
-                          <p className="docs-prose" style={{ whiteSpace: 'pre-line' }}>{sub.content}</p>
+                          <p className="docs-prose" style={{ whiteSpace: 'pre-line' }}>{renderFormattedContent(sub.content)}</p>
                           {sub.formula && (
-                            <div className="formula-banner-code-box" style={{ marginTop: '0.5rem', padding: '0.35rem 0.65rem' }}>
+                            <div
+                              className="docs-card-formula-box"
+                              style={{
+                                marginTop: '0.65rem',
+                                padding: '0.45rem 0.65rem',
+                                background: 'rgba(0, 0, 0, 0.25)',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border-color)',
+                                overflowX: 'auto',
+                                maxWidth: '100%',
+                                fontSize: '0.84rem',
+                                scrollbarWidth: 'thin',
+                                textAlign: 'center'
+                              }}
+                            >
                               <MathView math={sub.formula} displayMode={true} />
                             </div>
                           )}
                           {sub.points && sub.points.length > 0 && (
-                            <ul style={{ margin: '0.45rem 0 0 1rem', padding: 0, fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                            <ul style={{ margin: '0.55rem 0 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                               {sub.points.map((pt, pIdx) => (
-                                <li key={pIdx}>{pt}</li>
+                                <li key={pIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                  <span style={{ color: 'var(--accent-primary)', fontWeight: 700, fontSize: '0.74rem', marginTop: '0.1rem' }}>•</span>
+                                  <span>{renderFormattedContent(pt)}</span>
+                                </li>
                               ))}
                             </ul>
                           )}
@@ -260,8 +312,8 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     {howItWorks.map((st) => (
                       <div key={st.step} className="docs-step-card">
                         <div className="docs-step-badge">0{st.step}</div>
-                        <h4 className="docs-step-title">{st.title}</h4>
-                        <p className="docs-step-text">{st.description}</p>
+                        <h4 className="docs-step-title">{renderFormattedContent(st.title)}</h4>
+                        <p className="docs-step-text">{renderFormattedContent(st.description)}</p>
                       </div>
                     ))}
                   </div>
@@ -314,10 +366,10 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                         {symbols.map((sym, idx) => (
                           <tr key={idx}>
                             <td className="symbol-cell">
-                              <code>{sym.symbol}</code>
+                              <MathView math={sym.symbol} displayMode={false} />
                             </td>
                             <td className="name-cell">{sym.name}</td>
-                            <td className="meaning-cell">{sym.meaning}</td>
+                            <td className="meaning-cell">{renderFormattedContent(sym.meaning)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -410,7 +462,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     {observations.map((obs, idx) => (
                       <li key={idx} className="docs-bullet-item">
                         <CheckCircle2 size={15} className="bullet-check-icon" />
-                        <span>{obs}</span>
+                        <span>{renderFormattedContent(obs)}</span>
                       </li>
                     ))}
                   </ul>
@@ -459,7 +511,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     {keyTakeaways.map((takeaway, idx) => (
                       <div key={idx} className="takeaway-item">
                         <span className="takeaway-bullet-num">{idx + 1}.</span>
-                        <p className="takeaway-text">{takeaway}</p>
+                        <p className="takeaway-text">{renderFormattedContent(takeaway)}</p>
                       </div>
                     ))}
                   </div>
