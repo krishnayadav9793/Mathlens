@@ -92,16 +92,14 @@ export default function HeroSection({
     setSelectedCategory('all');
   };
 
-  const categoryChips = [
+  const categoryChips = useMemo(() => [
     { id: 'all', label: 'All', count: FEATURES.length },
-    { id: 'pixel-matrix', label: 'Pixels', count: 6 },
-    { id: 'transformations', label: 'Transforms', count: 1 },
-    { id: 'visual-labs', label: 'Visual Labs', count: 9 },
-    { id: 'ray-optics', label: 'Optics', count: 1 },
-    { id: 'eigen-spaces', label: 'Advanced', count: 1 },
-    { id: 'matrix-rank', label: 'Rank', count: 1 },
-    { id: 'linear-systems', label: 'Systems', count: 1 }
-  ];
+    ...CATEGORIES.map((cat) => ({
+      id: cat.id,
+      label: cat.shortLabel || cat.label,
+      count: FEATURES.filter((f) => f.category === cat.id).length
+    }))
+  ], []);
 
   return (
     <div className="hero-page-wrapper">

@@ -72,6 +72,7 @@ export default function FloatingDock({
   const isRank = currentView === 'module' && currentStep === 19;
   const isLinearSystems = currentView === 'module' && currentStep === 20;
   const isNorms = currentView === 'module' && currentStep === 21;
+  const isQr = currentView === 'module' && currentStep === 22;
 
   const activeFeature = getFeatureByStep(currentStep);
 
@@ -331,6 +332,19 @@ export default function FloatingDock({
                 {isNorms && <span className="dock-active-indicator" />}
                 <Maximize2 size={15} className="dock-icon" />
                 <span className="dock-label">Norms</span>
+              </button>
+
+              {/* 10. QR Decomposition (B22) */}
+              <button
+                type="button"
+                className={`dock-item ${isQr ? 'active' : ''}`}
+                onClick={() => handleNavClick('qr-decomposition', 22, false)}
+                title="QR Decomposition — Orthogonality, Gram–Schmidt & Image Reconstruction (B22)"
+                aria-label="QR Decomposition module"
+              >
+                {isQr && <span className="dock-active-indicator" />}
+                <Compass size={15} className="dock-icon" />
+                <span className="dock-label">QR Decomp</span>
               </button>
             </nav>
           </motion.div>

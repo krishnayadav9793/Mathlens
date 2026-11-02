@@ -71,7 +71,7 @@ export const CATEGORIES = [
   {
     id: 'matrix-rank',
     label: 'Rank of a Matrix & Redundancy',
-    shortLabel: 'Matrix Rank',
+    shortLabel: 'Rank',
     description: 'How much independent information do images, force vectors, and sensor signals contain?',
     icon: Binary,
     color: 'var(--accent-primary, #C59B67)'
@@ -79,7 +79,7 @@ export const CATEGORIES = [
   {
     id: 'linear-systems',
     label: 'Systems of Linear Equations (AX = b)',
-    shortLabel: 'Linear Systems',
+    shortLabel: 'Systems',
     description: 'Recover hidden images by inverting linear combinations, unmixing layers, and exploring matrix singularity',
     icon: Split,
     color: 'var(--accent-primary, #C59B67)'
@@ -87,7 +87,7 @@ export const CATEGORIES = [
   {
     id: 'vector-norms',
     label: 'Vector Norms & Distance Metrics',
-    shortLabel: 'Vector Norms',
+    shortLabel: 'Norms',
     description: 'What is the length of a vector? Unit balls (diamond, circle, square), norm axioms, and image change metrics.',
     icon: Maximize2,
     color: 'var(--accent-primary, #C59B67)'
