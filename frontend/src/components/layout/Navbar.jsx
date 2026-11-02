@@ -92,7 +92,18 @@ export default function Navbar({
           >
             About
           </button>
+
+          <button
+            type="button"
+            className={`navbar-nav-item ${currentView === 'contact' ? 'active' : ''}`}
+            onClick={() => onSelectView('contact')}
+            aria-current={currentView === 'contact' ? 'page' : undefined}
+          >
+            Contact
+          </button>
         </nav>
+
+        
 
         {/* 3. RIGHT SECTION: Track Selector, Theme, Right Rail Toggle */}
         <div className="navbar-actions-group">
@@ -201,6 +212,13 @@ export default function Navbar({
                 onClick={() => handleNavClick(() => onSelectView('about'))}
               >
                 About
+              </button>
+              <button
+                type="button"
+                className={`navbar-mobile-nav-item ${currentView === 'contact' ? 'active' : ''}`}
+                onClick={() => handleNavClick(() => onSelectView('contact'))}
+              >
+                Contact
               </button>
 
               <div className="navbar-mobile-divider" />

@@ -47,6 +47,7 @@ export default function Footer({ onSelectStep, onSelectView }) {
               <li><button onClick={() => onSelectView('home')}>Overview</button></li>
               <li><button onClick={() => onSelectView('learn')}>Curriculum</button></li>
               <li><button onClick={() => onSelectView('about')}>Architecture</button></li>
+              <li><button onClick={() => onSelectView('contact')}>Contact Us</button></li>
             </ul>
           </div>
         </div>
