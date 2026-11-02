@@ -2138,6 +2138,42 @@ export const MODULE_DOCUMENTATION = {
         formula: 'A_{\\text{image}} = Q R \\implies \\text{Reconstructed Image} = Q \\times R'
       }
     ],
+    howItWorks: [
+      {
+        step: 1,
+        title: 'Check Linear Independence',
+        description: 'Ensure column vectors {a₁, a₂, ..., a_n} are linearly independent and span the column space.'
+      },
+      {
+        step: 2,
+        title: 'Subtract Parallel Projections',
+        description: 'For each vector a_k, subtract its projections onto all preceding orthogonal vectors: u_k = a_k - ∑ proj_{u_j}(a_k).'
+      },
+      {
+        step: 3,
+        title: 'Normalize to Unit Vectors',
+        description: 'Divide each orthogonal vector by its Euclidean length: q_k = u_k / ||u_k|| to form orthonormal columns.'
+      },
+      {
+        step: 4,
+        title: 'Construct Q and R Matrices',
+        description: 'Pack q_k into Q and projection weights into upper-triangular R (R_{ij} = q_i^T a_j), yielding exact reconstruction A = Q × R.'
+      }
+    ],
+    symbols: [
+      { symbol: 'A', name: 'Original Matrix', meaning: 'The input matrix or digital grayscale image whose columns are to be decomposed.' },
+      { symbol: 'Q', name: 'Orthonormal Basis Matrix', meaning: 'Matrix of mutually perpendicular unit column vectors satisfying Q^T Q = I.' },
+      { symbol: 'R', name: 'Upper-Triangular Weight Matrix', meaning: 'Triangular matrix storing projection lengths and mixing coordinates with zeros below the diagonal.' },
+      { symbol: 'proj_a(b)', name: 'Orthogonal Projection', meaning: 'The component of vector b that lies directly parallel along vector a: ((a^T b)/(a^T a)) a.' },
+      { symbol: 'b_⊥', name: 'Orthogonal Complement', meaning: 'The perpendicular remainder vector b - proj_a(b), strictly orthogonal to a.' },
+      { symbol: 'a · b', name: 'Dot Product', meaning: 'Inner product evaluating to zero if and only if two vectors are perpendicular (90°).' }
+    ],
+    additionalFormulas: [
+      { label: 'Gram-Schmidt General Step', formula: 'u_k = a_k - \\sum_{j=1}^{k-1} \\frac{u_j^T a_k}{u_j^T u_j} u_j', desc: 'Recursive projection subtraction for the k-th orthogonal vector.' },
+      { label: 'Orthonormal Property', formula: 'Q^T Q = I \\implies Q^{-1} = Q^T', desc: 'The transpose of an orthonormal square matrix is its exact inverse.' },
+      { label: 'Upper-Triangular Inversion', formula: 'R = Q^T A', desc: 'Left-multiplying A by Q^T isolates R because Q^T Q = I.' },
+      { label: 'Linear Least Squares Solution', formula: 'A x = b \\implies R x = Q^T b', desc: 'Direct back-substitution solver without calculating normal equations.' }
+    ],
     workedExample: {
       title: 'Gram–Schmidt Orthogonalization of A = [[2, 1], [1, 2]]',
       input: 'Column vectors a₁ = [2, 1]ᵀ and a₂ = [1, 2]ᵀ:',

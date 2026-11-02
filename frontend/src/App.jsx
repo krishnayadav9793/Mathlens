@@ -61,16 +61,44 @@ class ErrorBoundary extends React.Component {
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
             {this.state.error?.message || 'An unexpected runtime error occurred.'}
           </p>
-          <button
-            type="button"
-            onClick={() => {
-              this.setState({ hasError: false, error: null });
-              window.location.reload();
-            }}
-            style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', background: 'var(--accent-primary, #C59B67)', color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
-          >
-            Reload Module
-          </button>
+          <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                if (this.props.onNavigateHome) {
+                  this.props.onNavigateHome();
+                } else {
+                  window.location.href = window.location.pathname;
+                }
+              }}
+              style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', background: 'var(--accent-primary, #C59B67)', color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+            >
+              Return to Home
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                if (this.props.onSelectStep) {
+                  this.props.onSelectStep(1);
+                }
+              }}
+              style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', background: 'var(--bg-secondary, #f3f4f6)', color: 'var(--text-primary, #111827)', border: '1px solid var(--border-color, #e5e7eb)', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+            >
+              Go to Step 01
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                window.location.reload();
+              }}
+              style={{ padding: '0.55rem 1.25rem', borderRadius: '8px', background: 'transparent', color: 'var(--text-secondary, #6b7280)', border: '1px solid var(--border-color, #e5e7eb)', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+            >
+              Reload Page
+            </button>
+          </div>
         </div>
       );
     }
@@ -401,9 +429,14 @@ export default function App() {
             />
           )}
 
-          <ErrorBoundary>
-            {renderMainContent()}
-          </ErrorBoundary>
+          <ErrorBoundary
+              key={`${currentView}-${currentStep}`}
+              resetKey={`${currentView}-${currentStep}`}
+              onNavigateHome={() => handleSelectView('home')}
+              onSelectStep={handleSelectStep}
+            >
+              {renderMainContent()}
+            </ErrorBoundary>
         </main>
 
         <Footer

@@ -13,7 +13,6 @@ import {
   Check,
   Eye,
   Layers,
-  ArrowRight,
   HelpCircle
 } from 'lucide-react';
 import { MODULE_DOCUMENTATION } from '../../data/moduleDocumentation';
@@ -102,7 +101,15 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
   const [activeTab, setActiveTab] = useState('concept'); // 'concept' | 'math' | 'applications'
   const [copiedFormula, setCopiedFormula] = useState(false);
 
-  const doc = MODULE_DOCUMENTATION[stepNumber] || MODULE_DOCUMENTATION[1];
+  const doc = MODULE_DOCUMENTATION[stepNumber] || MODULE_DOCUMENTATION[1] || {};
+  const subsections = doc.subsections || [];
+  const howItWorks = doc.howItWorks || [];
+  const symbols = doc.symbols || [];
+  const additionalFormulas = doc.additionalFormulas || [];
+  const observations = doc.observations || [];
+  const guidedInquiry = doc.guidedInquiry || [];
+  const applications = doc.applications || [];
+  const keyTakeaways = doc.keyTakeaways || [];
 
   const handleCopyFormula = () => {
     if (!doc.formula) return;
@@ -221,7 +228,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                       Core Working Principles &amp; Mathematical Concepts
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: doc.subsections.length > 1 ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: '0.75rem' }}>
-                      {doc.subsections.map((sub, sIdx) => (
+                      {subsections.map((sub, sIdx) => (
                         <div key={sIdx} className="docs-subcard">
                           <div className="docs-subcard-header">
                             <Compass size={15} className="docs-subcard-icon" />
@@ -250,7 +257,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                 <div className="docs-steps-card">
                   <h3 className="docs-steps-heading">How Does It Work?</h3>
                   <div className="docs-steps-grid">
-                    {doc.howItWorks.map((st) => (
+                    {howItWorks.map((st) => (
                       <div key={st.step} className="docs-step-card">
                         <div className="docs-step-badge">0{st.step}</div>
                         <h4 className="docs-step-title">{st.title}</h4>
@@ -304,7 +311,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                         </tr>
                       </thead>
                       <tbody>
-                        {doc.symbols.map((sym, idx) => (
+                        {symbols.map((sym, idx) => (
                           <tr key={idx}>
                             <td className="symbol-cell">
                               <code>{sym.symbol}</code>
@@ -326,7 +333,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                       <h3 className="docs-subcard-title">Key Associated Formulas &amp; Identities</h3>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: doc.additionalFormulas.length > 1 ? 'repeat(auto-fit, minmax(260px, 1fr))' : '1fr', gap: '0.65rem', marginTop: '0.5rem' }}>
-                      {doc.additionalFormulas.map((fItem, fIdx) => (
+                      {additionalFormulas.map((fItem, fIdx) => (
                         <div key={fIdx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0.55rem 0.75rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
                           <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--accent-primary)' }}>{fItem.label}</span>
                           <div style={{ marginTop: '0.2rem' }}>
@@ -400,7 +407,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     <h3 className="docs-subcard-title">What Should I Observe in This Lab?</h3>
                   </div>
                   <ul className="docs-bullets-list">
-                    {doc.observations.map((obs, idx) => (
+                    {observations.map((obs, idx) => (
                       <li key={idx} className="docs-bullet-item">
                         <CheckCircle2 size={15} className="bullet-check-icon" />
                         <span>{obs}</span>
@@ -410,14 +417,14 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                 </div>
 
                 {/* Guided Inquiry & Mathematical Insights */}
-                {doc.guidedInquiry && doc.guidedInquiry.length > 0 && (
+                {guidedInquiry.length > 0 && (
                   <div className="docs-observations-card">
                     <div className="docs-subcard-header">
                       <HelpCircle size={16} className="docs-subcard-icon" />
                       <h3 className="docs-subcard-title">Guided Inquiry &amp; Mathematical Insights</h3>
                     </div>
                     <div className="step15-inquiry-grid" style={{ marginTop: '0.65rem' }}>
-                      {doc.guidedInquiry.map((inq, iIdx) => (
+                      {guidedInquiry.map((inq, iIdx) => (
                         <div key={iIdx} className="step15-inquiry-item">
                           <span className="step15-inquiry-q">{inq.question}</span>
                           <span className="step15-inquiry-a">{inq.answer}</span>
@@ -433,7 +440,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     Practical Engineering Applications
                   </h3>
                   <div className="docs-applications-grid">
-                    {doc.applications.map((app, idx) => (
+                    {applications.map((app, idx) => (
                       <div key={idx} className="docs-app-item">
                         <div className="app-item-number">0{idx + 1}</div>
                         <h4 className="app-item-name">{app.name}</h4>
@@ -449,7 +456,7 @@ export default function ModuleDocumentation({ stepNumber = 1, defaultOpen = fals
                     Key Takeaways
                   </h3>
                   <div className="takeaways-list">
-                    {doc.keyTakeaways.map((takeaway, idx) => (
+                    {keyTakeaways.map((takeaway, idx) => (
                       <div key={idx} className="takeaway-item">
                         <span className="takeaway-bullet-num">{idx + 1}.</span>
                         <p className="takeaway-text">{takeaway}</p>
