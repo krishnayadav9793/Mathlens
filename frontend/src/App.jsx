@@ -10,6 +10,7 @@ import FetchSimulationLoader from './components/common/FetchSimulationLoader';
 import HeroSection from './components/home/HeroSection';
 import CurriculumScreen from './screens/CurriculumScreen';
 import AboutScreen from './screens/AboutScreen';
+import ContactScreen from './screens/ContactScreen';
 import RightNavRail from './components/navigation/RightNavRail';
 import BackButton from './components/common/BackButton';
 
@@ -34,6 +35,7 @@ import Step18Eigenvalues from './steps/Step18Eigenvalues';
 import Step19MatrixRank from './steps/Step19MatrixRank';
 import Step20LinearSystems from './steps/Step20LinearSystems';
 import Step21VectorNorms from './steps/Step21VectorNorms';
+import Step22QRDecomposition from './steps/Step22QRDecomposition';
 
 import { Analytics } from "@vercel/analytics/react"
 import { getFeatureByStep, FEATURES } from './config/features';
@@ -96,7 +98,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const viewParam = params.get('view');
-    if (viewParam && ['home', 'module', 'learn', 'about'].includes(viewParam)) {
+    if (viewParam && ['home', 'module', 'learn', 'about', 'contact'].includes(viewParam)) {
       return viewParam;
     }
     if (params.get('step')) return 'module';
@@ -321,6 +323,8 @@ export default function App() {
         return <Step20LinearSystems onSelectStep={handleSelectStep} />;
       case 21:
         return <Step21VectorNorms onSelectStep={handleSelectStep} />;
+      case 22:
+        return <Step22QRDecomposition onSelectStep={handleSelectStep} />;
       default:
         return <Step1Grayscale onSelectStep={handleSelectStep} />;
     }
@@ -342,6 +346,9 @@ export default function App() {
     }
     if (currentView === 'about') {
       return <AboutScreen />;
+    }
+    if (currentView === 'contact') {
+      return <ContactScreen />;
     }
     return renderModuleStepContent();
   };
@@ -387,7 +394,9 @@ export default function App() {
                   ? `Workspace • Module ${activeFeature.code}: ${activeFeature.title}`
                   : currentView === 'learn'
                     ? 'Curriculum & Pathways'
-                    : 'About Platform Architecture'
+                    : currentView === 'contact'
+                      ? 'Contact Us & Direct Email Dispatch'
+                      : 'About Platform Architecture'
               }
             />
           )}

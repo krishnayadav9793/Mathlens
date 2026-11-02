@@ -2088,6 +2088,101 @@ export const MODULE_DOCUMENTATION = {
       'L₁ measures total absolute error budget, L₂ measures root-mean-square energy, and L_∞ measures peak outlier distortion.',
       'Two different image modifications can have identical L₁ norm (80), yet completely different visual character (concentrated spike vs distributed blur).'
     ]
+  },
+  22: {
+    stepNumber: 22,
+    code: '22',
+    title: 'QR Decomposition — Orthogonality, Gram–Schmidt & Image Reconstruction',
+    category: 'QR Decomposition',
+    oneLiner: 'Factorize matrices into orthonormal columns Q and upper-triangular weights R to resolve vectors and reconstruct grayscale images.',
+    formula: 'A = Q R, \\quad Q^T Q = I, \\quad u_k = a_k - \\sum_{j=1}^{k-1} \\frac{u_j^T a_k}{u_j^T u_j} u_j',
+    formulaDisplay: 'A = QR,  Q^T Q = I,  u_k = a_k - ∑ proj_{u_j}(a_k)',
+    whatIsThis:
+      'QR Decomposition is a cornerstone matrix factorization that expresses any matrix A as the product of an orthogonal matrix Q (with mutually perpendicular unit columns) and an upper-triangular matrix R. While standard basis vectors like (1, 0) and (0, 1) are perpendicular, arbitrary vectors in data science and image processing rarely are. The Gram–Schmidt process systematically strips away redundant parallel projections, yielding a pristine orthonormal basis Q and the reconstruction weights R.',
+    whyNeedIt:
+      'Perpendicular unit vectors eliminate numerical instability and redundancy. In digital image processing, a grayscale pixel matrix can be decomposed into an orthonormal spatial feature basis Q and mixing weights R, answering the foundational question: "Can an image be represented using perpendicular unit vectors and perfectly reconstructed?" Yes! QR decomposition is also the computational engine behind numerically stable linear least-squares regression, computer graphics ray reflections, and the QR algorithm for calculating matrix eigenvalues.',
+    subsections: [
+      {
+        title: 'Module 1: What Does Perpendicular Mean?',
+        content:
+          'Two vectors a and b are perpendicular (orthogonal) if and only if their dot product is zero: a · b = a_x b_x + a_y b_y = 0. For example, a = [3, 1]ᵀ and b = [-1, 3]ᵀ yield (3)(-1) + (1)(3) = -3 + 3 = 0, forming an exact 90° angle. Perpendicular vectors have zero correlation—neither vector casts any projection onto the other.',
+        formula: 'a \\cdot b = a_x b_x + a_y b_y = 0 \\iff \\theta = 90^\\circ'
+      },
+      {
+        title: 'Module 2: Projection — How Much of One Vector Lies Along Another?',
+        content:
+          'To resolve vector b along base vector a, we compute the orthogonal projection: proj_a(b) = ((aᵀ b) / (aᵀ a)) a. For a = [3, 1]ᵀ and b = [2, 3]ᵀ, aᵀ b = 9 and aᵀ a = 10, giving proj_a(b) = 0.9 × [3, 1]ᵀ = [2.7, 0.9]ᵀ. The remaining perpendicular component is b_⊥ = b - proj_a(b) = [-0.7, 2.1]ᵀ. Together, they form a right triangle: b = proj_a(b) + b_⊥ with (proj_a(b)) · b_⊥ = 0.',
+        formula: '\\text{proj}_a(b) = \\frac{a^T b}{a^T a} a, \\quad b_\\perp = b - \\text{proj}_a(b)'
+      },
+      {
+        title: 'Module 3: Gram–Schmidt Orthogonalization (2D & 3D)',
+        content:
+          'Given linearly independent vectors a₁, a₂, ..., the Gram–Schmidt algorithm systematically constructs orthogonal vectors u_k and orthonormal vectors q_k:\n' +
+          '1. Set u₁ = a₁\n' +
+          '2. Subtract the projection: u₂ = a₂ - proj_{u₁}(a₂)\n' +
+          '3. For 3D: u₃ = a₃ - proj_{u₁}(a₃) - proj_{u₂}(a₃)\n' +
+          '4. Normalize each vector to unit length: q_k = u_k / ||u_k||.\n' +
+          'For a₁ = [2, 1]ᵀ and a₂ = [1, 2]ᵀ, subtracting the projection gives u₂ = [-0.6, 1.2]ᵀ, which is exactly perpendicular to u₁.',
+        formula: 'u_1 = a_1, \\quad u_2 = a_2 - \\frac{u_1^T a_2}{u_1^T u_1} u_1, \\quad q_i = \\frac{u_i}{\\|u_i\\|}'
+      },
+      {
+        title: 'Module 4: Building Q and R Matrices (A = QR)',
+        content:
+          'Collecting the orthonormal unit vectors q_i as columns forms matrix Q. Because its columns are orthonormal, Qᵀ Q = I. The upper-triangular matrix R stores the projection lengths: R_{ij} = q_iᵀ a_j for i ≤ j, with zeros below the diagonal. Multiplying Q × R reconstructs the original matrix A with zero loss.',
+        formula: 'A = Q R, \\quad Q^T Q = I, \\quad R = Q^T A = \\begin{bmatrix} r_{11} & r_{12} \\\\ 0 & r_{22} \\end{bmatrix}'
+      },
+      {
+        title: 'Module 5: Representing Digital Images with Perpendicular Vectors',
+        content:
+          'Can we represent an image matrix using perpendicular unit vectors? Yes! When applied to a 2×2 or 3×3 grayscale image matrix A, Q provides an orthogonal basis of spatial column patterns with zero redundant overlap, and R provides the upper-triangular blending coefficients. Computing Q × R reconstructs every pixel with 100% mathematical precision.',
+        formula: 'A_{\\text{image}} = Q R \\implies \\text{Reconstructed Image} = Q \\times R'
+      }
+    ],
+    workedExample: {
+      title: 'Gram–Schmidt Orthogonalization of A = [[2, 1], [1, 2]]',
+      input: 'Column vectors a₁ = [2, 1]ᵀ and a₂ = [1, 2]ᵀ:',
+      matrixDisplay: [
+        [2, 1],
+        [1, 2]
+      ],
+      calculation:
+        '1. First orthogonal vector: u₁ = a₁ = [2, 1]ᵀ\n' +
+        '   Norm: ||u₁|| = √(2² + 1²) = √5 ≈ 2.2361\n' +
+        '   Unit vector: q₁ = [2/√5, 1/√5]ᵀ ≈ [0.8944, 0.4472]ᵀ\n\n' +
+        '2. Second orthogonal vector: subtract projection of a₂ onto u₁:\n' +
+        '   u₁ᵀ a₂ = (2)(1) + (1)(2) = 4\n' +
+        '   u₁ᵀ u₁ = 5\n' +
+        '   proj_{u₁}(a₂) = (4/5) [2, 1]ᵀ = [1.6, 0.8]ᵀ\n' +
+        '   u₂ = [1, 2]ᵀ - [1.6, 0.8]ᵀ = [-0.6, 1.2]ᵀ\n' +
+        '   Check: u₁ · u₂ = 2(-0.6) + 1(1.2) = 0 ✓\n' +
+        '   Norm: ||u₂|| = √((-0.6)² + 1.2²) = √1.8 ≈ 1.3416\n' +
+        '   Unit vector: q₂ = u₂ / ||u₂|| ≈ [-0.4472, 0.8944]ᵀ\n\n' +
+        '3. Assemble Q and R:\n' +
+        '   Q = [[0.8944, -0.4472], [0.4472, 0.8944]]\n' +
+        '   R = [[2.2361, 1.7889], [0, 1.3416]]\n' +
+        '   Q × R = [[2.00, 1.00], [1.00, 2.00]] = A ✓',
+      output: 'Matrix A is factored into orthonormal Q (Qᵀ Q = I) and upper-triangular R with exact reconstruction.'
+    },
+    observations: [
+      'Two vectors are perpendicular if and only if their dot product a · b = 0.',
+      'Vector projection decomposes any vector b into b = proj_a(b) + b_⊥, where b_⊥ is strictly perpendicular to a.',
+      'Gram–Schmidt converts any linearly independent vector set into a mutually orthogonal set by subtracting prior projections.',
+      'Normalizing the orthogonal vectors produces orthonormal matrix Q where Qᵀ Q = I.',
+      'Upper-triangular matrix R stores the projection lengths and coordinates, making QR multiplication reproduce the exact original matrix.',
+      'Digital images can be completely represented and losslessly reconstructed using perpendicular unit column vectors.'
+    ],
+    applications: [
+      { name: 'Linear Least Squares & Regression', desc: 'Solving overdetermined systems Ax = b stably via Rx = Qᵀ b without squaring condition numbers in normal equations.' },
+      { name: 'Computer Graphics & Optics Ray Tracing', desc: 'Decomposing incident light rays into parallel surface components and perpendicular normal reflections.' },
+      { name: 'Eigenvalue QR Algorithm', desc: 'Iteratively computing A_{k+1} = R_k Q_k to determine all eigenvalues and eigenvectors of general matrices.' },
+      { name: 'Image & Video Feature Orthogonalization', desc: 'Constructing non-redundant spatial bases for texture analysis, signal compression, and PCA/SVD preprocessing.' }
+    ],
+    keyTakeaways: [
+      'Orthogonal vectors have zero dot product and zero redundant mutual projection.',
+      'Vector projection resolves any vector into parallel and perpendicular components.',
+      'Gram–Schmidt sequentially strips out parallel shadows to build an orthonormal coordinate frame.',
+      'QR decomposition (A = QR) represents any matrix or image as an orthonormal basis Q scaled by triangular weights R.'
+    ]
   }
 };
 

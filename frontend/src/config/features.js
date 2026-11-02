@@ -91,6 +91,14 @@ export const CATEGORIES = [
     description: 'What is the length of a vector? Unit balls (diamond, circle, square), norm axioms, and image change metrics.',
     icon: Maximize2,
     color: 'var(--accent-primary, #C59B67)'
+  },
+  {
+    id: 'qr-decomposition',
+    label: 'QR Decomposition & Orthogonality',
+    shortLabel: 'QR Decomp',
+    description: 'Perpendicular vectors, orthogonal projections, Gram-Schmidt process, and image factorisation A = QR',
+    icon: Compass,
+    color: 'var(--accent-primary, #C59B67)'
   }
 ];
 
@@ -501,21 +509,52 @@ export const FEATURES = [
       'pixel error',
       'concentrated vs distributed'
     ]
+  },
+  // Category 9: QR Decomposition & Orthogonality (Step 22)
+  {
+    id: 'qr-decomposition-gram-schmidt',
+    stepNumber: 22,
+    code: '22',
+    slug: 'qr-decomposition-gram-schmidt',
+    title: 'QR Decomposition — Gram–Schmidt Orthogonalization & Image Reconstruction',
+    shortTitle: 'QR Decomposition',
+    category: 'qr-decomposition',
+    categoryLabel: 'Advanced: Orthogonal Spaces',
+    icon: Compass,
+    formula: 'A = QR,  Q^T Q = I,  u_k = a_k - \\sum \\text{proj}_{u_j}(a_k)',
+    rawFormula: 'A = Q R, \\quad Q^T Q = I, \\quad u_k = a_k - \\sum_{j=1}^{k-1} \\frac{u_j^T a_k}{u_j^T u_j} u_j',
+    summary: 'Can we represent an image matrix using perpendicular unit vectors? Explore orthogonal vectors (a · b = 0), vector projections, 2D & 3D Gram-Schmidt process, and factorize image matrices A = QR to reconstruct grayscale pixels.',
+    concepts: [
+      'Perpendicular Vectors & Dot Product (a · b = 0)',
+      'Vector Projection & Perpendicular Complement (b = proj_a b + b_⊥)',
+      'Gram–Schmidt Orthogonalization (2D & 3D Interactive Animation)',
+      'Normalization to Orthonormal Columns (q_i = u_i / ||u_i||)',
+      'Building Q and R Matrices (A = QR)',
+      'Orthonormal Matrix Property (Q^T Q = I)',
+      'Matrix Multiplication Verification (QR = A)',
+      '2×2 & 3×3 Grayscale Image Representation & Reconstruction'
+    ],
+    keywords: [
+      'qr decomposition',
+      'gram schmidt',
+      'orthogonal vectors',
+      'perpendicular',
+      'dot product',
+      'projection',
+      'orthonormal basis',
+      'matrix factorization',
+      'q matrix',
+      'r matrix',
+      'image reconstruction',
+      'grayscale image matrix'
+    ]
   }
 ];
 
 export const TOTAL_ACTIVE_LABS = FEATURES.length;
 
 export const COMING_SOON_TOPICS = [
-  {
-    id: 'gram-schmidt',
-    title: 'Gram-Schmidt Orthogonalization',
-    formula: '\\vec{u}_k = \\vec{v}_k - \\sum_{j=1}^{k-1} \\text{proj}_{\\vec{u}_j}(\\vec{v}_k)',
-    category: 'Advanced Vector Spaces',
-    description: 'Construct orthogonal and orthonormal coordinate bases from arbitrary vector sets.',
-    icon: Variable
-  },
-  {
+    {
     id: 'svd',
     title: 'Singular Value Decomposition (SVD)',
     formula: 'A = U \\Sigma V^T',
