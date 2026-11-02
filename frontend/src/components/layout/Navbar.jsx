@@ -156,7 +156,7 @@ export default function Navbar({
               <PanelRight size={14} className="navbar-action-icon" aria-hidden="true" />
               <span className="navbar-btn-label">Modules</span>
               <span className="navbar-rail-pill">
-                {currentView === 'module' ? activeFeature.code : '18'}
+                {currentView === 'module' && activeFeature ? activeFeature.code : FEATURES.length}
               </span>
             </button>
           )}
@@ -254,7 +254,7 @@ export default function Navbar({
                       onToggleRightRail();
                     }}
                   >
-                    <span>Browse 18 Modules Rail</span>
+                    <span>Browse {FEATURES.length} Modules Rail</span>
                   </button>
                 )}
               </div>

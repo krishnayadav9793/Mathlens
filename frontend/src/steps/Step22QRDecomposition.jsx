@@ -802,57 +802,69 @@ export default function Step22QRDecomposition({ onSelectStep }) {
           Explore dot products, orthogonal vector projections, the step-by-step Gram–Schmidt algorithm in 2D &amp; 3D, and factorize matrices into $A = QR$ to reconstruct visual pixels.
         </p>
 
-        {/* 5 SUB-CHAPTER NAVIGATION TABS */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.85rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('perpendicular')}
-            className={`sub-chapter-pill ${activeTab === 'perpendicular' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <Activity size={14} />
-            <span>1. What is Perpendicular?</span>
-          </button>
+        {/* SUB-CHAPTER / EXPLORATION OPTIONS HEADER */}
+        <div style={{ marginTop: '0.95rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--accent-primary, #C59B67)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Layers size={13} />
+              <span>Interactive Exploration Modules &amp; Options</span>
+            </span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+              Select a stage (1 – 5):
+            </span>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('projection')}
-            className={`sub-chapter-pill ${activeTab === 'projection' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <Layers size={14} />
-            <span>2. Vector Projection (proj_a b)</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('perpendicular')}
+              className={`sub-chapter-pill ${activeTab === 'perpendicular' ? 'active' : ''}`}
+              style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Activity size={14} />
+              <span>1. What is Perpendicular?</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('gram-schmidt')}
-            className={`sub-chapter-pill ${activeTab === 'gram-schmidt' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <Sparkles size={14} />
-            <span>3. Gram–Schmidt Process (2D &amp; 3D)</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('projection')}
+              className={`sub-chapter-pill ${activeTab === 'projection' ? 'active' : ''}`}
+              style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Layers size={14} />
+              <span>2. Vector Projection (proj_a b)</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('qr-matrices')}
-            className={`sub-chapter-pill ${activeTab === 'qr-matrices' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <Grid size={14} />
-            <span>4. Build Q &amp; R Matrices (A = QR)</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('gram-schmidt')}
+              className={`sub-chapter-pill ${activeTab === 'gram-schmidt' ? 'active' : ''}`}
+              style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Sparkles size={14} />
+              <span>3. Gram–Schmidt Process (2D &amp; 3D)</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('image-qr')}
-            className={`sub-chapter-pill ${activeTab === 'image-qr' ? 'active' : ''}`}
-            style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <ImageIcon size={14} />
-            <span>5. Grayscale Image Matrix Decomposition</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('qr-matrices')}
+              className={`sub-chapter-pill ${activeTab === 'qr-matrices' ? 'active' : ''}`}
+              style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Grid size={14} />
+              <span>4. Build Q &amp; R Matrices (A = QR)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('image-qr')}
+              className={`sub-chapter-pill ${activeTab === 'image-qr' ? 'active' : ''}`}
+              style={{ fontSize: '0.78rem', padding: '0.32rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <ImageIcon size={14} />
+              <span>5. Grayscale Image Matrix Factorization</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -896,7 +908,11 @@ export default function Step22QRDecomposition({ onSelectStep }) {
             </div>
 
             {/* Presets Row */}
-            <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ marginTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                Preset Vector Configurations:
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={() => { setM1Ax(3); setM1Ay(1); setM1Bx(-1); setM1By(3); }}
@@ -922,6 +938,7 @@ export default function Step22QRDecomposition({ onSelectStep }) {
                 Snap b to 90° (-a_y, a_x)
               </button>
             </div>
+          </div>
           </div>
 
           {/* Right: Dot Product Analysis & Controls */}
@@ -1137,15 +1154,36 @@ export default function Step22QRDecomposition({ onSelectStep }) {
           {/* Right: Formulas & Decomposition */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             {/* Textbook Starting Values Quick Button */}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => { setM2Ax(3); setM2Ay(1); setM2Bx(2); setM2By(3); }}
-                className="sub-chapter-pill"
-                style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
-              >
-                Reset to Prompt: a = [3, 1], b = [2, 3]
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)' }}>
+                Projection Vector Options:
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => { setM2Ax(3); setM2Ay(1); setM2Bx(2); setM2By(3); }}
+                  className="sub-chapter-pill"
+                  style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+                >
+                  Reset to Prompt: a = [3, 1], b = [2, 3]
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setM2Ax(3); setM2Ay(1); setM2Bx(6); setM2By(2); }}
+                  className="sub-chapter-pill"
+                  style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+                >
+                  Collinear / Pure Parallel (b = 2a)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setM2Ax(3); setM2Ay(1); setM2Bx(-1); setM2By(3); }}
+                  className="sub-chapter-pill"
+                  style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+                >
+                  Pure Perpendicular (proj = 0)
+                </button>
+              </div>
             </div>
 
             {/* 1. Projection Math Box */}
@@ -1266,31 +1304,36 @@ export default function Step22QRDecomposition({ onSelectStep }) {
             </div>
 
             {/* Step Selector Buttons */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', marginBottom: '0.85rem' }}>
-              <button
-                type="button"
-                onClick={() => setGsStep(1)}
-                className={`sub-chapter-pill ${gsStep === 1 ? 'active' : ''}`}
-                style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
-              >
-                1. Independent
-              </button>
-              <button
-                type="button"
-                onClick={() => setGsStep(2)}
-                className={`sub-chapter-pill ${gsStep === 2 ? 'active' : ''}`}
-                style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
-              >
-                2. Subtract Proj
-              </button>
-              <button
-                type="button"
-                onClick={() => setGsStep(3)}
-                className={`sub-chapter-pill ${gsStep === 3 ? 'active' : ''}`}
-                style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
-              >
-                3. Normalize
-              </button>
+            <div style={{ marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                Orthogonalization Stages:
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setGsStep(1)}
+                  className={`sub-chapter-pill ${gsStep === 1 ? 'active' : ''}`}
+                  style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
+                >
+                  1. Independent
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGsStep(2)}
+                  className={`sub-chapter-pill ${gsStep === 2 ? 'active' : ''}`}
+                  style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
+                >
+                  2. Subtract Proj
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGsStep(3)}
+                  className={`sub-chapter-pill ${gsStep === 3 ? 'active' : ''}`}
+                  style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', textAlign: 'center', justifyContent: 'center' }}
+                >
+                  3. Normalize
+                </button>
+              </div>
             </div>
 
             {/* Canvas */}
@@ -1567,6 +1610,39 @@ export default function Step22QRDecomposition({ onSelectStep }) {
       {/* ========================================================================= */}
       {activeTab === 'qr-matrices' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Matrix Presets Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)' }}>
+              Preset Matrix Configurations:
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => { setM4A11(2); setM4A12(1); setM4A21(1); setM4A22(2); }}
+                className="sub-chapter-pill"
+                style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+              >
+                Prompt Example: [[2, 1], [1, 2]]
+              </button>
+              <button
+                type="button"
+                onClick={() => { setM4A11(1); setM4A12(2); setM4A21(3); setM4A22(4); }}
+                className="sub-chapter-pill"
+                style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+              >
+                Standard Matrix: [[1, 2], [3, 4]]
+              </button>
+              <button
+                type="button"
+                onClick={() => { setM4A11(3); setM4A12(0); setM4A21(0); setM4A22(3); }}
+                className="sub-chapter-pill"
+                style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+              >
+                Pure Diagonal: [[3, 0], [0, 3]]
+              </button>
+            </div>
+          </div>
+
           {/* Top Row: Matrix A inputs and QR Factorization display */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
             {/* Original Matrix A */}
@@ -1763,9 +1839,20 @@ export default function Step22QRDecomposition({ onSelectStep }) {
           </div>
 
           {/* Controls Bar: Dimension & Presets */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.65rem' }}>
-            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>Image Size:</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', padding: '0.8rem 1rem', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--accent-primary, #C59B67)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <ImageIcon size={14} />
+                <span>Image Resolution &amp; Preset Options</span>
+              </span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                Click any pixel in Original Image to edit intensity (0–255)
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.65rem' }}>
+              <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>Image Size:</span>
               <button
                 type="button"
                 onClick={() => {
@@ -1807,6 +1894,7 @@ export default function Step22QRDecomposition({ onSelectStep }) {
               ))}
             </div>
           </div>
+        </div>
 
           {/* 4-Stage Image Representation: Original -> Q -> R -> Reconstructed */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem' }}>

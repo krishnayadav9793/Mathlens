@@ -131,16 +131,14 @@ export default function RightNavRail({
     });
   }, [filterQuery, selectedCategory]);
 
-  const categoryChips = [
+  const categoryChips = useMemo(() => [
     { id: 'all', label: 'All', count: FEATURES.length },
-    { id: 'pixel-matrix', label: 'Pixels', count: 6 },
-    { id: 'transformations', label: 'Transforms', count: 1 },
-    { id: 'visual-labs', label: 'Visual Labs', count: 9 },
-    { id: 'ray-optics', label: 'Optics', count: 1 },
-    { id: 'eigen-spaces', label: 'Advanced', count: 1 },
-    { id: 'matrix-rank', label: 'Rank', count: 1 },
-    { id: 'linear-systems', label: 'Systems', count: 1 }
-  ];
+    ...CATEGORIES.map((cat) => ({
+      id: cat.id,
+      label: cat.shortLabel || cat.label,
+      count: FEATURES.filter((f) => f.category === cat.id).length
+    }))
+  ], []);
 
   return (
     <AnimatePresence>
@@ -173,7 +171,7 @@ export default function RightNavRail({
                 <div className="rail-header-text">
                   <div className="rail-header-tagline">
                     <span className="rail-mini-badge">WORKSPACE RAIL</span>
-                    <span className="rail-count-badge">18 Modules</span>
+                    <span className="rail-count-badge">{FEATURES.length} Modules</span>
                   </div>
                   <h3 className="rail-title">Visual Laboratories</h3>
                 </div>
