@@ -24,7 +24,8 @@ import {
   FunctionSquare,
   Network,
   Zap,
-  Split
+  Split,
+  QrCode
 } from 'lucide-react';
 
 export const CATEGORIES = [
@@ -98,6 +99,14 @@ export const CATEGORIES = [
     shortLabel: 'QR Decomp',
     description: 'Perpendicular vectors, orthogonal projections, Gram-Schmidt process, and image factorisation A = QR',
     icon: Compass,
+    color: 'var(--accent-primary, #C59B67)'
+  },
+  {
+    id: 'qr-matrix-norms',
+    label: 'QR Codes & Matrix Norms',
+    shortLabel: 'QR Norms',
+    description: 'Measuring numerical distance between QR code binary matrices with L1, L2, Lmax norms and error correction.',
+    icon: QrCode,
     color: 'var(--accent-primary, #C59B67)'
   }
 ];
@@ -547,6 +556,49 @@ export const FEATURES = [
       'r matrix',
       'image reconstruction',
       'grayscale image matrix'
+    ]
+  },
+  // Category 10: QR Codes & Matrix Norms (Step 23)
+  {
+    id: 'qr-matrix-norms',
+    stepNumber: 23,
+    code: '23',
+    slug: 'qr-matrix-norms',
+    title: 'How Different Are Two QR Codes? Exploring Matrix Norms',
+    shortTitle: 'QR Matrix Norms',
+    category: 'qr-matrix-norms',
+    categoryLabel: 'QR Codes & Matrix Norms',
+    icon: QrCode,
+    formula: 'D = A - B, \\quad \\|D\\|_1 = \\sum |D_{ij}|, \\quad \\|D\\|_2 = \\sqrt{\\sum D_{ij}^2}, \\quad \\|D\\|_{\\max} = \\max |D_{ij}|',
+    rawFormula: 'D = A - B, \\quad \\|D\\|_1 = \\sum_{i,j} |D_{ij}|, \\quad \\|D\\|_2 = \\sqrt{\\sum_{i,j} D_{ij}^2}, \\quad \\|D\\|_{\\max} = \\max_{i,j} |D_{ij}|',
+    summary: 'How different are two QR codes? Convert words into binary matrices, calculate difference matrix D = A - B, compute entrywise matrix norms (L1, L2, Lmax), flip squares interactively, and discover why matrix distance does not equal lost information.',
+    concepts: [
+      'Dots to Data (5×5 Binary Grid)',
+      'QR Code Binary Matrices (21×21 Modules)',
+      'Difference Matrix D = A - B',
+      'Entrywise L1 Norm (Hamming Count of Differing Squares)',
+      'Entrywise L2 Frobenius Norm (||D||₂ = √||D||₁)',
+      'Entrywise L_max Norm (Peak Module Difference)',
+      'Message Mutation (HELLO vs HELLP vs WORLD)',
+      'Interactive QR Module Flipping & Damage Simulation',
+      'Readability Testing with Reed-Solomon Error Correction',
+      'Matrix Norm Distance vs Decoded Information'
+    ],
+    keywords: [
+      'qr code',
+      'matrix norms',
+      'difference matrix',
+      'l1 norm',
+      'l2 norm',
+      'lmax norm',
+      'frobenius norm',
+      'hamming distance',
+      'binary matrix',
+      'error correction',
+      'reed solomon',
+      'qr readability',
+      'module flipping',
+      'hello world'
     ]
   }
 ];

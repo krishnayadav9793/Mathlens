@@ -14214,3 +14214,33 @@ input[type="range"].step18-range-input::-webkit-slider-thumb:hover {
     justify-content: flex-end;
   }
 }
+
+
+/* ========================================================================= */
+/* STEP 23: QR CODE MATRIX NORMS STYLES & RESPONSIVE POLISH */
+/* ========================================================================= */
+.qr-matrix-grid-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-subtle, rgba(197, 155, 103, 0.3)) transparent;
+  padding: 4px;
+}
+
+.qr-matrix-grid-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.qr-matrix-grid-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent-subtle, rgba(197, 155, 103, 0.3));
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .qr-comparison-dual-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .qr-norms-kpi-row {
+    grid-template-columns: 1fr !important;
+  }
+}
