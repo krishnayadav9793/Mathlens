@@ -36,6 +36,7 @@ import Step19MatrixRank from './steps/Step19MatrixRank';
 import Step20LinearSystems from './steps/Step20LinearSystems';
 import Step21VectorNorms from './steps/Step21VectorNorms';
 import Step22QRDecomposition from './steps/Step22QRDecomposition';
+import Step23QRMatrixNorms from './steps/Step23QRMatrixNorms';
 
 import { Analytics } from "@vercel/analytics/react"
 import { getFeatureByStep, FEATURES } from './config/features';
@@ -353,6 +354,8 @@ export default function App() {
         return <Step21VectorNorms onSelectStep={handleSelectStep} />;
       case 22:
         return <Step22QRDecomposition onSelectStep={handleSelectStep} />;
+      case 23:
+        return <Step23QRMatrixNorms onSelectStep={handleSelectStep} />;
       default:
         return <Step1Grayscale onSelectStep={handleSelectStep} />;
     }

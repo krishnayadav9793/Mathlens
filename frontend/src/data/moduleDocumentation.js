@@ -2240,6 +2240,151 @@ export const MODULE_DOCUMENTATION = {
       'Gram–Schmidt sequentially strips out parallel shadows to build an orthonormal coordinate frame.',
       'QR decomposition ($A = QR$) represents any matrix or image as an orthonormal basis $Q$ scaled by triangular weights $R$.'
     ]
+  },
+  23: {
+    stepNumber: 23,
+    code: '23',
+    title: 'How Different Are Two QR Codes? Exploring Matrix Norms',
+    category: 'QR Codes & Matrix Norms',
+    oneLiner: 'Quantify differences between 2D binary QR matrices using entrywise matrix norms ($L_1$, $L_2$, $L_{\\max}$) and discover why numerical distance does not equal lost information.',
+    formula: 'D = A - B, \\quad \\|D\\|_1 = \\sum_{i,j} |D_{ij}|, \\quad \\|D\\|_2 = \\sqrt{\\sum_{i,j} D_{ij}^2}, \\quad \\|D\\|_{\\max} = \\max_{i,j} |D_{ij}|',
+    formulaDisplay: 'D = A - B,  ||D||_1 = ∑ |D_ij|,  ||D||_2 = √(∑ D_ij²),  ||D||_max = max |D_ij|',
+    whatIsThis:
+      'This module explores how information is stored in binary matrices (0 = white, 1 = black) and how linear algebra measures the distance between two 2D patterns. Starting with a 5×5 dot matrix and scaling to standard 21×21 QR codes for words like "HELLO" and "WORLD", we compute the difference matrix $D = A - B$ and evaluate three fundamental entrywise matrix norms: $L_1$ (Hamming distance of differing squares), $L_2$ (Frobenius root-mean-square norm), and $L_{\\max}$ (Chebyshev peak mismatch). Furthermore, we simulate module corruption to reveal why matrix norms measure geometric distance rather than semantic content, thanks to Reed-Solomon error correction.',
+    whyNeedIt:
+      'In digital communications, computer vision, and machine learning, matrices frequently represent discrete patterns, binary masks, or compressed barcodes. Matrix norms allow engineers to quantify perceptual difference, noise levels, and transmission bit errors. Crucially, QR codes embody error-tolerant encoding: understanding the gap between matrix distance and decodable information illustrates the power of error-correcting codes in modern technology.',
+    subsections: [
+      {
+        title: 'Step 1: From Dots to Data (5×5 Binary Grid)',
+        content:
+          'A digital image is a matrix of numbers. In a binary monochrome grid, every pixel is either black (1) or white (0). An interactive 5×5 grid represents 25 bits of information where simple shapes (X, O, L, +) map directly to structured matrices.',
+        points: [
+          'Binary Mapping: 1 = Black (light absorbed / inked module), 0 = White (light reflected).',
+          'Matrix Size: $5 \\times 5 = 25$ total binary entries.',
+          'State Mutation: Toggling any visual square immediately updates entry $A[i, j] \\in \\{0, 1\\}$.'
+        ],
+        formula: 'A \\in \\{0, 1\\}^{5 \\times 5}, \\quad A_{ij} \\in \\{0, 1\\}'
+      },
+      {
+        title: 'Step 2: From Words to QR Matrices (21×21 Modules)',
+        content:
+          'A QR (Quick Response) code uses a structured 2D arrangement of black and white squares to encode text, URLs, and data. Smallest standard QR codes (Version 1) contain exactly $21 \\times 21 = 441$ modules.',
+        points: [
+          'Standard Version 1 Parameters: $21 \\times 21$ grid, Byte encoding mode, Error Correction Level M (~15% recovery), Mask Pattern 0.',
+          'Structural Invariants: Corner Finder Patterns ($7 \\times 7$ squares) and Timing Patterns remain fixed across different messages to aid scanner orientation.',
+          'Payload Variability: Data and Reed-Solomon parity codewords change dramatically between words like "HELLO" and "WORLD".'
+        ],
+        formula: 'A, B \\in \\{0, 1\\}^{21 \\times 21}, \\quad \\text{Modules} = 441'
+      },
+      {
+        title: 'Step 3: Measuring the Difference Using Matrix Norms',
+        content:
+          'To quantify how different two QR codes are, we subtract their binary matrices to form the difference matrix $D = A - B$. Because entries are binary, $D_{ij} \\in \\{-1, 0, +1\\}$. We then compute three entrywise matrix norms:',
+        points: [
+          'Difference Matrix: $D = A - B$ with $D_{ij} = +1$ (A is black, B is white), $-1$ (A is white, B is black), or $0$ (matching colors).',
+          'L₁ Norm (Hamming Count): $\\|D\\|_1 = \\sum_{i,j} |D_{ij}|$ directly counts the total number of differing squares!',
+          'L₂ Norm (Frobenius Norm): $\\|D\\|_2 = \\sqrt{\\sum_{i,j} D_{ij}^2} = \\sqrt{\\|D\\|_1}$, because $(\\pm 1)^2 = 1$.',
+          'L_max Norm (Chebyshev Norm): $\\|D\\|_{\\max} = \\max_{i,j} |D_{ij}| = 1$ whenever at least one square differs, and $0$ only when matrices are identical.'
+        ],
+        formula: 'D = A - B, \\quad \\|D\\|_1 = \\sum |D_{ij}|, \\quad \\|D\\|_2 = \\sqrt{\\|D\\|_1}, \\quad \\|D\\|_{\\max} = \\max |D_{ij}|'
+      },
+      {
+        title: 'Step 4: Mutating Words & Flipping QR Modules (Error Correction)',
+        content:
+          'Does changing one letter change only one square? NO! QR codes scramble data with polynomial division and masking. Can a QR code remain readable when its matrix is corrupted? YES! Reed-Solomon error correction allows decoders to recover the original word even when dozens of squares are damaged.',
+        points: [
+          'Single Letter Impact: Changing "HELLO" to "HELLP" flips dozens of modules across the matrix due to polynomial encoding and mask evaluation.',
+          'Module Flipping: Manually flipping $k$ modules increases $\\|D\\|_1$ by exactly $k$, $\\|D\\|_2$ to $\\sqrt{k}$, and maintains $\\|D\\|_{\\max} = 1$.',
+          'Readability Threshold: Level M error correction tolerates up to ~15% corrupted modules before decoding fails.',
+          'Key Distinction: Matrix norms measure spatial numerical distance; error correction restores semantic information.'
+        ],
+        formula: '\\|D\\|_1 = k, \\quad \\|D\\|_2 = \\sqrt{k}, \\quad \\text{Decodable if } k \\le \\text{Capacity}'
+      }
+    ],
+    howItWorks: [
+      {
+        step: 1,
+        title: 'Encode Messages into 21×21 Binary Matrices',
+        description: 'Text strings (e.g., "HELLO" and "WORLD") are converted to standardized Version 1 QR codes with identical error correction (Level M) and mask pattern 0.'
+      },
+      {
+        step: 2,
+        title: 'Compute Difference Matrix D = A - B',
+        description: 'Perform entrywise subtraction between matrix $A$ and matrix $B$. Differing entries take values $+1$ or $-1$, while matching entries evaluate to $0$.'
+      },
+      {
+        step: 3,
+        title: 'Calculate Entrywise Matrix Norms',
+        description: 'Sum absolute differences for $\\|D\\|_1$ (Hamming count), take the square root of squared sum for Frobenius $\\|D\\|_2$, and determine the maximum entry for $\\|D\\|_{\\max}$.'
+      },
+      {
+        step: 4,
+        title: 'Simulate Noise & Evaluate Readability',
+        description: 'Flip individual data modules or clusters to observe real-time norm inflation, and run a Reed-Solomon QR decoder to test if the original message remains intact.'
+      }
+    ],
+    symbols: [
+      { symbol: 'A', name: 'Base QR Matrix', meaning: '21×21 binary matrix corresponding to first message (e.g. "HELLO"), $A_{ij} \\in \\{0, 1\\}$.' },
+      { symbol: 'B', name: 'Comparison QR Matrix', meaning: '21×21 binary matrix corresponding to second message (e.g. "WORLD"), $B_{ij} \\in \\{0, 1\\}$.' },
+      { symbol: 'D', name: 'Difference Matrix', meaning: 'Entrywise difference $D = A - B$ with entries $D_{ij} \\in \\{-1, 0, +1\\}$.' },
+      { symbol: '\\|D\\|_1', name: 'Entrywise L1 Norm', meaning: 'Sum of absolute differences $\\sum |D_{ij}|$, directly equal to the number of mismatched squares.' },
+      { symbol: '\\|D\\|_2', name: 'Frobenius Norm', meaning: 'Root sum of squared differences $\\sqrt{\\sum D_{ij}^2} = \\sqrt{\\|D\\|_1}$.' },
+      { symbol: '\\|D\\|_{\\max}', name: 'Chebyshev Max Norm', meaning: 'Maximum absolute entry $\\max |D_{ij}|$, evaluating to 1 for any mismatch, 0 for identity.' },
+      { symbol: 'k', name: 'Corrupted Modules Count', meaning: 'The count of manually flipped or noisy squares in the modified QR matrix.' }
+    ],
+    additionalFormulas: [
+      { label: 'Hamming Distance Equivalence', formula: '\\text{Hamming}(A, B) = \\|A - B\\|_1 = \\sum_{i,j} |A_{ij} - B_{ij}|', desc: 'For binary alphabets, the L1 norm is identical to the classical Hamming distance.' },
+      { label: 'Binary Frobenius Identity', formula: '\\|D\\|_F = \\sqrt{\\|D\\|_1}', desc: 'Because (-1)² = 1² = 1 and 0² = 0, the sum of squares equals the sum of absolute values.' },
+      { label: 'Relative Difference Ratio', formula: '\\rho = \\frac{\\|D\\|_1}{N^2} \\times 100\\%', desc: 'Percentage of total matrix modules that disagree between two QR codes (N = 21, N² = 441).' },
+      { label: 'Reed-Solomon Error Bound', formula: '2t + s \\le n - k', desc: 'Error correction capacity where t errors and s erasures can be corrected within parity budget.' }
+    ],
+    workedExample: {
+      title: 'Comparing QR Matrices of "HELLO" vs "WORLD"',
+      input: 'Two 21×21 QR codes generated with Version 1, Level M, Mask 0:',
+      matrixDisplay: [
+        [1, 0, '…', 1],
+        [0, 1, '…', 0],
+        ['⋮', '⋮', '⋱', '⋮'],
+        [1, 1, '…', 0]
+      ],
+      calculation:
+        '1. Total module count: 21 × 21 = 441 modules.\n\n' +
+        '2. Difference Matrix D = A - B:\n' +
+        '   - Positions where both are black: D_ij = 1 - 1 = 0\n' +
+        '   - Positions where both are white: D_ij = 0 - 0 = 0\n' +
+        '   - Positions where HELLO is black and WORLD is white: D_ij = 1 - 0 = +1\n' +
+        '   - Positions where HELLO is white and WORLD is black: D_ij = 0 - 1 = -1\n\n' +
+        '3. Compute Norms:\n' +
+        '   - Differing modules count = 196 squares\n' +
+        '   - L1 Norm: ||D||₁ = ∑ |D_ij| = 196\n' +
+        '   - L2 Norm: ||D||₂ = √(∑ D_ij²) = √196 = 14.00\n' +
+        '   - L_max Norm: ||D||_max = max |D_ij| = 1\n' +
+        '   - Mismatch percentage: (196 / 441) × 100% ≈ 44.4%',
+      output: 'Both QR codes differ by 196 modules (||D||₁ = 196, ||D||₂ = 14.00, ||D||_max = 1).'
+    },
+    observations: [
+      'Finder and timing patterns are identical between both QR codes because they are standard structural fixtures.',
+      'The L1 norm directly counts the exact number of differing squares between two binary matrices.',
+      'Because entries are binary, the Frobenius L2 norm is always exactly the square root of the L1 norm: ||D||₂ = √||D||₁.',
+      'The L_max norm is always 1 whenever at least one square differs, regardless of whether 1 module or 300 modules differ.',
+      'Changing a single letter (e.g. HELLO → HELLP) alters dozens of squares due to Reed-Solomon parity polynomials and masking.',
+      'A larger matrix norm does not necessarily mean greater loss of encoded information: QR error correction can decode corrupted matrices up to its recovery limit.'
+    ],
+    applications: [
+      'Barcode & QR Code Scanning',
+      'Optical Character Recognition (OCR)',
+      'Digital Image Watermarking & Tamper Detection',
+      'Hamming Distance & Bit Error Rate in Telecommunications',
+      'Error-Correcting Codes (Reed-Solomon, LDPC)',
+      'Perceptual Image Hashing & Duplicate Detection'
+    ],
+    keyTakeaways: [
+      'Binary matrices store digital visual patterns where 1 represents black and 0 represents white.',
+      'The difference matrix D = A - B captures entrywise discrepancies with values in {-1, 0, +1}.',
+      'The L1 norm measures total mismatched squares, L2 measures root energy, and L_max measures peak deviation.',
+      'Matrix norms measure numerical/spatial distance, whereas error correction protects semantic information.'
+    ]
   }
 };
+
 
