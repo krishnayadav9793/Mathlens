@@ -14060,6 +14060,9 @@ input[type="range"].step18-range-input::-webkit-slider-thumb:hover {
   font-weight: 600;
   color: var(--accent-primary);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   transition: color 0.15s ease;
 }
 
