@@ -126,11 +126,9 @@ export default function RGBExplodedView({
   onHoverCell,
   onChangeCell
 }) {
-  if (!colorGrid) return null;
-
-  const rMatrix = useMemo(() => colorGrid.map(row => row.map(p => p.r)), [colorGrid]);
-  const gMatrix = useMemo(() => colorGrid.map(row => row.map(p => p.g)), [colorGrid]);
-  const bMatrix = useMemo(() => colorGrid.map(row => row.map(p => p.b)), [colorGrid]);
+  const rMatrix = useMemo(() => (colorGrid ? colorGrid.map(row => row.map(p => p.r)) : []), [colorGrid]);
+  const gMatrix = useMemo(() => (colorGrid ? colorGrid.map(row => row.map(p => p.g)) : []), [colorGrid]);
+  const bMatrix = useMemo(() => (colorGrid ? colorGrid.map(row => row.map(p => p.b)) : []), [colorGrid]);
 
   const channelConfig = useMemo(() => ({
     r: {
@@ -152,6 +150,8 @@ export default function RGBExplodedView({
       matrix: bMatrix
     }
   }), [rMatrix, gMatrix, bMatrix]);
+
+  if (!colorGrid) return null;
 
   const renderMatrixGrid = (cfg, isCompact = false) => {
     const { key, matrix } = cfg;

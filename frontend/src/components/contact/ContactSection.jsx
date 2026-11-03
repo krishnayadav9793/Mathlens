@@ -15,8 +15,12 @@ import {
   Code2,
   Sparkles,
   RotateCcw,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
+
+const MAILER_SERVER_URL = import.meta.env.VITE_MAILER_SERVER_URL || 'https://mathlens-7fj5.vercel.app/sendMail';
+const DEFAULT_RECEIVER_EMAIL = 'payalwadhwa511@gmail.com';
 
 /**
  * Dedicated Departmental Email Options (Streamlined)
@@ -25,7 +29,7 @@ const CONTACT_EMAIL_OPTIONS = [
   {
     id: 'support',
     title: 'General Support & Inquiries',
-    email: 'support@mathlens.org',
+    email: 'payalwadhwa511@gmail.com',
     badge: 'Support',
     icon: HelpCircle,
     description: 'Platform walkthroughs, usage questions, and general help.',
@@ -34,7 +38,7 @@ const CONTACT_EMAIL_OPTIONS = [
   {
     id: 'research',
     title: 'Academic & Research',
-    email: 'payal@iiitv.ac.in',
+    email: 'payal_wadhwa@iiitvadodara.ac.in',
     badge: 'Faculty',
     icon: GraduationCap,
     description: 'Under Prof. Payal Wadhwa (IIIT Vadodara) for institutional research.',
@@ -43,7 +47,7 @@ const CONTACT_EMAIL_OPTIONS = [
   {
     id: 'bugs',
     title: 'Technical Bug Reports',
-    email: 'bugs@mathlens.org',
+    email: '202451091@iiitvadodara.ac.in',
     badge: 'Bugs',
     icon: Bug,
     description: 'Report visual rendering bugs, numerical errors, or canvas glitches.',
@@ -52,7 +56,7 @@ const CONTACT_EMAIL_OPTIONS = [
   {
     id: 'feedback',
     title: 'Curriculum & Pedagogy',
-    email: 'feedback@mathlens.org',
+    email: '202451104@iiitvadodara.ac.in',
     badge: 'Curriculum',
     icon: Sparkles,
     description: 'Suggest new matrix concepts, visual modules, or lesson plans.',
@@ -61,7 +65,7 @@ const CONTACT_EMAIL_OPTIONS = [
   {
     id: 'team',
     title: 'Development Team',
-    email: 'team@mathlens.org',
+    email: '202451113@iiitvadodara.ac.in',
     badge: 'Devs',
     icon: Code2,
     description: 'Contact Naman Kumar, Mayank Soni, and Krishana Yadav.',
@@ -81,6 +85,7 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
 
   // Email copy state
   const [copiedId, setCopiedId] = useState(null);
@@ -104,16 +109,44 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
     return Object.keys(errors).length === 0;
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(MAILER_SERVER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: DEFAULT_RECEIVER_EMAIL,
+          email: formData.email.trim(),
+          name: formData.name.trim(),
+          subject: `[MathLens Contact] ${formData.category} from ${formData.name.trim()}`,
+          category: formData.category,
+          query: formData.query.trim(),
+          message: formData.query.trim(),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || `Failed to send email (Status: ${response.status})`);
+      }
+
       setIsSubmitted(true);
       setSubmittedData({ ...formData, timestamp: new Date().toLocaleTimeString() });
-    }, 600);
+    } catch (err) {
+      console.error('Contact form submission error:', err);
+      setSubmitError(err.message || 'Failed to send your message. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
@@ -124,6 +157,7 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
       query: ''
     });
     setFormErrors({});
+    setSubmitError(null);
     setIsSubmitted(false);
     setSubmittedData(null);
   };
@@ -283,6 +317,30 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
                       )}
                     </div>
 
+                    {/* Submission Error Banner */}
+                    {submitError && (
+                      <div
+                        className="contact-submit-error"
+                        role="alert"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          padding: '0.65rem 0.85rem',
+                          marginBottom: '0.5rem',
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                          border: '1px solid rgba(239, 68, 68, 0.35)',
+                          color: '#EF4444',
+                          fontSize: '0.82rem',
+                          lineHeight: '1.4'
+                        }}
+                      >
+                        <AlertCircle size={15} style={{ flexShrink: 0 }} />
+                        <span>{submitError}</span>
+                      </div>
+                    )}
+
                     {/* Submit Button */}
                     <div className="contact-form-actions">
                       <button
@@ -317,7 +375,7 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
                     </div>
                     <h4 className="contact-success-title">Query Received!</h4>
                     <p className="contact-success-text">
-                      Thank you, <strong>{submittedData?.name}</strong>. Your message regarding <em>{submittedData?.category}</em> has been submitted. A confirmation will be sent to <strong>{submittedData?.email}</strong>.
+                      Thank you, <strong>{submittedData?.name}</strong>. Your message regarding <em>{submittedData?.category}</em> has been sent to <strong>{DEFAULT_RECEIVER_EMAIL}</strong>. A copy will also be directed with your contact email <strong>{submittedData?.email}</strong>.
                     </p>
 
                     <div className="contact-success-summary glass-level-3">
@@ -384,7 +442,7 @@ export default function ContactSection({ id = 'contact-us', className = '' }) {
                             <span className="email-item-badge">{item.badge}</span>
                           </div>
                           <div className="email-item-details-row">
-                            <span className="email-item-address">{item.email}</span>
+                            <span className="email-item-address" title={item.email}>{item.email}</span>
                             <span className="email-item-separator">•</span>
                             <span className="email-item-desc">{item.description}</span>
                           </div>

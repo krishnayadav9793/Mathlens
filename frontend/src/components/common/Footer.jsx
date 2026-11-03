@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Heart, Code2, BookOpen, Layers } from 'lucide-react';
+// No unused icons
 
 export default function Footer({ onSelectStep, onSelectView }) {
   return (

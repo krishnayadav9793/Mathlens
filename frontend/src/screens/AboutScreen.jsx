@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, Cpu, Code2, Award, Heart, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Cpu, Code2 } from 'lucide-react';
 
 export default function AboutScreen() {
   return (
