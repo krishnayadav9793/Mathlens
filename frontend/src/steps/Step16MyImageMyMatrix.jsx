@@ -19,7 +19,8 @@ import {
   Grid,
   Undo2,
   X,
-  FileText
+  FileText,
+  ArrowRight
 } from 'lucide-react';
 import { clampPixel } from '../core/mathEngine';
 import StepFooter from '../components/layout/StepFooter';
@@ -166,6 +167,115 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
   const [roiPos, setRoiPos] = useState({ r: 0, c: 0 });
   const [inspectPixel, setInspectPixel] = useState({ r: 25, c: 25 });
   const [showMatrixModal, setShowMatrixModal] = useState(false);
+  const [matrixModalView, setMatrixModalView] = useState('transformed'); // 'transformed' | 'original' | 'difference' | 'side-by-side'
+  const [matrixChannel, setMatrixChannel] = useState('gray'); // 'gray' | 'r' | 'g' | 'b'
+  const [roiAnchorMode, setRoiAnchorMode] = useState('center'); // 'center' | 'topleft'
+
+  // Dynamic Region of Interest coordinates
+  const effectiveRoiR = useMemo(() => {
+    if (roiAnchorMode === 'topleft') return 0;
+    return Math.max(0, Math.min(resolution - roiSize, inspectPixel.r - Math.floor(roiSize / 2)));
+  }, [roiAnchorMode, resolution, roiSize, inspectPixel.r]);
+
+  const effectiveRoiC = useMemo(() => {
+    if (roiAnchorMode === 'topleft') return 0;
+    return Math.max(0, Math.min(resolution - roiSize, inspectPixel.c - Math.floor(roiSize / 2)));
+  }, [roiAnchorMode, resolution, roiSize, inspectPixel.c]);
+
+  // Helper to extract numeric pixel channel value from RGBA typed array
+  const getCellValue = useCallback((buffer, r, c, ch) => {
+    if (!buffer) return 0;
+    const clampedR = Math.min(resolution - 1, Math.max(0, r));
+    const clampedC = Math.min(resolution - 1, Math.max(0, c));
+    const idx = (clampedR * resolution + clampedC) * 4;
+    const red = buffer[idx] ?? 0;
+    const grn = buffer[idx + 1] ?? 0;
+    const blu = buffer[idx + 2] ?? 0;
+
+    if (ch === 'r') return red;
+    if (ch === 'g') return grn;
+    if (ch === 'b') return blu;
+    // Grayscale luminance (Rec. 601)
+    return Math.round(0.299 * red + 0.587 * grn + 0.114 * blu);
+  }, [resolution]);
+
+  // Render bracketed matrix grid for given pixel buffer
+  const renderMatrixGrid = (bufferOrDiffType, label, isDiff = false) => {
+    const isTen = roiSize === 10;
+    const cellSize = isTen ? '34px' : '44px';
+    const cellFontSize = isTen ? '0.66rem' : '0.78rem';
+    const posFontSize = isTen ? '0.50rem' : '0.60rem';
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+        {label && (
+          <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--accent-primary, #697951)', fontFamily: 'var(--font-mono)' }}>
+            {label}
+          </span>
+        )}
+        <div className="step16-matrix-bracket-wrap">
+          <div className="step16-bracket-l" />
+          <div
+            style={{
+              display: 'grid',
+              gap: '4px',
+              gridTemplateColumns: `repeat(${roiSize}, ${cellSize})`
+            }}
+          >
+            {Array.from({ length: roiSize }).map((_, r) =>
+              Array.from({ length: roiSize }).map((_, c) => {
+                const targetR = Math.min(resolution - 1, effectiveRoiR + r);
+                const targetC = Math.min(resolution - 1, effectiveRoiC + c);
+                let val = 0;
+                if (isDiff) {
+                  const tV = getCellValue(transPixelData, targetR, targetC, matrixChannel);
+                  const oV = getCellValue(origPixelData, targetR, targetC, matrixChannel);
+                  val = Math.abs(tV - oV);
+                } else {
+                  val = getCellValue(bufferOrDiffType, targetR, targetC, matrixChannel);
+                }
+                const isSelected = targetR === inspectPixel.r && targetC === inspectPixel.c;
+
+                return (
+                  <div
+                    key={`cell-${r}-${c}`}
+                    className="step16-roi-cell"
+                    onClick={() => setInspectPixel({ r: targetR, c: targetC })}
+                    title={`Coordinate (${targetR}, ${targetC}) - Value: ${val}. Click to inspect.`}
+                    style={{
+                      width: cellSize,
+                      height: cellSize,
+                      cursor: 'pointer',
+                      borderColor: isSelected ? 'var(--accent-primary, #697951)' : undefined,
+                      boxShadow: isSelected ? '0 0 0 2px var(--accent-primary, #697951)' : undefined,
+                      background: isSelected ? 'var(--accent-subtle, rgba(105, 121, 81, 0.18))' : undefined
+                    }}
+                  >
+                    <span
+                      className="step16-roi-val"
+                      style={{
+                        fontSize: cellFontSize,
+                        color: isSelected ? 'var(--accent-primary, #697951)' : undefined
+                      }}
+                    >
+                      {val}
+                    </span>
+                    <span
+                      className="step16-roi-pos"
+                      style={{ fontSize: posFontSize }}
+                    >
+                      {targetR},{targetC}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+          <div className="step16-bracket-r" />
+        </div>
+      </div>
+    );
+  };
 
   // Prediction-based learning state
   const [userPrediction, setUserPrediction] = useState('');
@@ -871,6 +981,26 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
             <div style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Click any pixel to inspect numerical matrix values.
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMatrixModalView('original');
+                setShowMatrixModal(true);
+              }}
+              className="icon-action-btn"
+              style={{
+                padding: '0.3rem 0.6rem',
+                fontSize: '0.74rem',
+                width: '100%',
+                justifyContent: 'center',
+                marginTop: '0.4rem'
+              }}
+              title="Open numerical inspection for Original Matrix A"
+            >
+              <Grid size={13} />
+              <span>View Matrix A (Original)</span>
+            </button>
           </div>
 
           {/* PANEL 2: OPERATION PARAMETERS & CONTROLS */}
@@ -1120,7 +1250,10 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
 
               <button
                 type="button"
-                onClick={() => setShowMatrixModal(true)}
+                onClick={() => {
+                  setMatrixModalView('transformed');
+                  setShowMatrixModal(true);
+                }}
                 className="icon-action-btn"
                 style={{
                   padding: '0.28rem 0.65rem',
@@ -1128,9 +1261,10 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
                   borderColor: 'var(--accent-primary, #697951)',
                   color: 'var(--text-primary)'
                 }}
+                title="Inspect transformed numerical matrix"
               >
                 <Grid size={13} style={{ color: 'var(--accent-primary, #697951)' }} />
-                <span>View Numerical Matrix</span>
+                <span>View Numerical Matrix (A′)</span>
               </button>
             </div>
           </div>
@@ -1154,7 +1288,14 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
                     width: '200px',
                     height: '200px',
                     imageRendering: resolution <= 20 ? 'pixelated' : 'auto',
-                    display: 'block'
+                    display: 'block',
+                    cursor: 'crosshair'
+                  }}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = Math.floor(((e.clientX - rect.left) / rect.width) * resolution);
+                    const y = Math.floor(((e.clientY - rect.top) / rect.height) * resolution);
+                    setInspectPixel({ r: Math.min(resolution - 1, Math.max(0, y)), c: Math.min(resolution - 1, Math.max(0, x)) });
                   }}
                 />
               </div>
@@ -1182,6 +1323,28 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
                 <span>Download Report</span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMatrixModalView('transformed');
+                setShowMatrixModal(true);
+              }}
+              className="icon-action-btn"
+              style={{
+                padding: '0.3rem 0.6rem',
+                fontSize: '0.74rem',
+                width: '100%',
+                justifyContent: 'center',
+                marginTop: '0.4rem',
+                borderColor: 'var(--accent-primary, #697951)',
+                color: 'var(--accent-primary, #697951)'
+              }}
+              title="Open numerical inspection for Transformed Matrix A′"
+            >
+              <Grid size={13} />
+              <span>View Matrix A′ (Transformed)</span>
+            </button>
           </div>
         </div>
 
@@ -1259,14 +1422,34 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
               className="step16-modal-dialog"
+              style={{
+                maxWidth: matrixModalView === 'side-by-side' ? '880px' : '620px',
+                transition: 'max-width 0.2s ease'
+              }}
             >
               <div className="step16-card-header">
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                    Digital Image Numerical Matrix
-                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      Digital Image Numerical Matrix
+                    </h3>
+                    <span
+                      className="badge-tag-mini"
+                      style={{
+                        fontSize: '0.68rem',
+                        padding: '0.12rem 0.45rem',
+                        color: 'var(--accent-primary, #697951)',
+                        borderColor: 'var(--accent-primary, #697951)'
+                      }}
+                    >
+                      {matrixModalView === 'transformed' ? "Transformed (A′)" :
+                       matrixModalView === 'original' ? "Original (A)" :
+                       matrixModalView === 'difference' ? "Difference (|A′ - A|)" :
+                       "Comparison (A ➔ A′)"}
+                    </span>
+                  </div>
                   <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-                    Inspecting {roiSize} × {roiSize} Region of Interest at resolution {resolution} × {resolution}
+                    Inspecting {roiSize} × {roiSize} Region [rows {effectiveRoiR}..{Math.min(resolution - 1, effectiveRoiR + roiSize - 1)}, cols {effectiveRoiC}..{Math.min(resolution - 1, effectiveRoiC + roiSize - 1)}] at resolution {resolution} × {resolution}
                   </p>
                 </div>
                 <button
@@ -1279,61 +1462,198 @@ export default function Step16MyImageMyMatrix({ onSelectStep }) {
                 </button>
               </div>
 
-              {/* Bracketed Matrix Display */}
-              {origPixelData && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0', overflowX: 'auto' }}>
-                  <div className="step16-matrix-bracket-wrap">
-                    <div className="step16-bracket-l" />
-                    <div
-                      style={{
-                        display: 'grid',
-                        gap: '4px',
-                        gridTemplateColumns: `repeat(${roiSize}, 44px)`
-                      }}
+              {/* Matrix Target Selector */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Matrix View:</span>
+                <div className="step16-pills-row" style={{ flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixModalView('transformed')}
+                    className={`step16-pill-btn ${matrixModalView === 'transformed' ? 'active' : ''}`}
+                    title="View transformed result matrix reflecting active math operation"
+                  >
+                    Transformed (A′)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixModalView('original')}
+                    className={`step16-pill-btn ${matrixModalView === 'original' ? 'active' : ''}`}
+                    title="View initial original image matrix"
+                  >
+                    Original (A)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixModalView('difference')}
+                    className={`step16-pill-btn ${matrixModalView === 'difference' ? 'active' : ''}`}
+                    title="View element-wise absolute difference |A′ - A|"
+                  >
+                    Difference (|A′ - A|)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMatrixModalView('side-by-side')}
+                    className={`step16-pill-btn ${matrixModalView === 'side-by-side' ? 'active' : ''}`}
+                    title="Compare Original A and Transformed A′ side-by-side"
+                  >
+                    Side-by-Side (A ➔ A′)
+                  </button>
+                </div>
+              </div>
+
+              {/* Channel & Region Focus Controls */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap', padding: '0.1rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Channel:</span>
+                  <div className="step16-pills-row">
+                    <button
+                      type="button"
+                      onClick={() => setMatrixChannel('gray')}
+                      className={`step16-pill-btn ${matrixChannel === 'gray' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
                     >
-                      {Array.from({ length: roiSize }).map((_, r) =>
-                        Array.from({ length: roiSize }).map((_, c) => {
-                          const targetR = Math.min(resolution - 1, roiPos.r + r);
-                          const targetC = Math.min(resolution - 1, roiPos.c + c);
-                          const idx = (targetR * resolution + targetC) * 4;
-                          const gray = Math.round(
-                            0.299 * (origPixelData[idx] ?? 0) +
-                            0.587 * (origPixelData[idx + 1] ?? 0) +
-                            0.114 * (origPixelData[idx + 2] ?? 0)
-                          );
-                          return (
-                            <div key={`roi-${r}-${c}`} className="step16-roi-cell">
-                              <span className="step16-roi-val">{gray}</span>
-                              <span className="step16-roi-pos">{targetR},{targetC}</span>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                    <div className="step16-bracket-r" />
+                      Grayscale
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMatrixChannel('r')}
+                      className={`step16-pill-btn ${matrixChannel === 'r' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', color: matrixChannel === 'r' ? '#EF4444' : undefined }}
+                    >
+                      Red (R)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMatrixChannel('g')}
+                      className={`step16-pill-btn ${matrixChannel === 'g' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', color: matrixChannel === 'g' ? '#10B981' : undefined }}
+                    >
+                      Green (G)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMatrixChannel('b')}
+                      className={`step16-pill-btn ${matrixChannel === 'b' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', color: matrixChannel === 'b' ? '#3B82F6' : undefined }}
+                    >
+                      Blue (B)
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Focus:</span>
+                  <div className="step16-pills-row">
+                    <button
+                      type="button"
+                      onClick={() => setRoiAnchorMode('center')}
+                      className={`step16-pill-btn ${roiAnchorMode === 'center' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                      title={`Center region around selected pixel (${inspectPixel.r}, ${inspectPixel.c})`}
+                    >
+                      Selected ({inspectPixel.r}, {inspectPixel.c})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRoiAnchorMode('topleft')}
+                      className={`step16-pill-btn ${roiAnchorMode === 'topleft' ? 'active' : ''}`}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                      title="Anchor region to top-left corner (0, 0)"
+                    >
+                      (0, 0)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Interactive Scalar Multiplier slider inside modal when in scalar mode */}
+              {operation === 'scalar' && (
+                <div style={{
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  padding: '0.45rem 0.75rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                      Live Scalar Multiplier (k):
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent-primary, #697951)' }}>
+                      A′ = clamp({scalarK.toFixed(1)} · A, 0, 255)
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="3.0"
+                    step="0.1"
+                    value={scalarK}
+                    onChange={(e) => setScalarK(parseFloat(e.target.value))}
+                    className="step16-range-input"
+                    style={{ '--slider-pct': `${Math.max(0, Math.min(100, ((scalarK - 0.1) / (3.0 - 0.1)) * 100))}%` }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+                    <span>0.1 (Darken)</span>
+                    <span>1.0 (Identity)</span>
+                    <span>3.0 (Brighten)</span>
                   </div>
                 </div>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Region Size:</span>
-                <div className="step16-pills-row">
-                  <button
-                    type="button"
-                    onClick={() => setRoiSize(5)}
-                    className={`step16-pill-btn ${roiSize === 5 ? 'active' : ''}`}
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    5 × 5
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRoiSize(10)}
-                    className={`step16-pill-btn ${roiSize === 10 ? 'active' : ''}`}
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    10 × 10
-                  </button>
+              {/* Bracketed Matrix Display */}
+              {origPixelData && transPixelData && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '0.4rem 0', overflowX: 'auto', width: '100%' }}>
+                  {matrixModalView === 'side-by-side' ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', flexWrap: 'nowrap' }}>
+                      {renderMatrixGrid(origPixelData, `Original Matrix A (${matrixChannel.toUpperCase()})`)}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', flexShrink: 0, padding: '0 0.2rem' }}>
+                        <ArrowRight size={18} style={{ color: 'var(--accent-primary, #697951)' }} />
+                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', maxWidth: '90px', textAlign: 'center' }}>
+                          {operationDetails.title}
+                        </span>
+                      </div>
+                      {renderMatrixGrid(transPixelData, `Transformed Matrix A′ (${matrixChannel.toUpperCase()})`)}
+                    </div>
+                  ) : matrixModalView === 'original' ? (
+                    renderMatrixGrid(origPixelData, `Original Numerical Matrix A [${matrixChannel.toUpperCase()}]`)
+                  ) : matrixModalView === 'difference' ? (
+                    renderMatrixGrid(null, `Absolute Difference |A′ - A| [${matrixChannel.toUpperCase()}]`, true)
+                  ) : (
+                    renderMatrixGrid(transPixelData, `Transformed Numerical Matrix A′ [${matrixChannel.toUpperCase()}]`)
+                  )}
+                </div>
+              )}
+
+              {/* Footer controls: Size toggle and Selected pixel legend */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap', paddingTop: '0.35rem', borderTop: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '2px', border: '2px solid var(--accent-primary, #697951)', background: 'var(--accent-subtle, rgba(105, 121, 81, 0.2))' }} />
+                  <span>Selected pixel ({inspectPixel.r}, {inspectPixel.c}). Click any matrix cell to inspect.</span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Region Size:</span>
+                  <div className="step16-pills-row">
+                    <button
+                      type="button"
+                      onClick={() => setRoiSize(5)}
+                      className={`step16-pill-btn ${roiSize === 5 ? 'active' : ''}`}
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      5 × 5
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRoiSize(10)}
+                      className={`step16-pill-btn ${roiSize === 10 ? 'active' : ''}`}
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      10 × 10
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
