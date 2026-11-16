@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Sparkles, ArrowRight, CornerDownLeft, X, Command } from 'lucide-react';
-import { FEATURES, CATEGORIES } from '../../config/features';
+import { FEATURES, CATEGORIES, VISIBLE_FEATURES } from '../../config/features';
 
 export default function CommandPalette({ isOpen, onClose, onSelectFeature, onTriggerSimulationLoader }) {
   const [query, setQuery] = useState('');
@@ -17,9 +17,9 @@ export default function CommandPalette({ isOpen, onClose, onSelectFeature, onTri
   }, [isOpen]);
 
   const filteredFeatures = React.useMemo(() => {
-    if (!query.trim()) return FEATURES;
+    if (!query.trim()) return VISIBLE_FEATURES;
     const q = query.toLowerCase().trim();
-    return FEATURES.filter(f => 
+    return VISIBLE_FEATURES.filter(f => 
       f.title.toLowerCase().includes(q) ||
       f.shortTitle.toLowerCase().includes(q) ||
       f.categoryLabel.toLowerCase().includes(q) ||

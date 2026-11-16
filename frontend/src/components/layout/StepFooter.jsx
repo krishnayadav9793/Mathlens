@@ -1,10 +1,10 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { FEATURES } from '../../config/features';
+import { TOTAL_VISIBLE_LABS } from '../../config/features';
 
 export default function StepFooter({ stepNumber, onSelectStep }) {
   const currentNumStr = stepNumber < 10 ? `0${stepNumber}` : `${stepNumber}`;
-  const totalSteps = FEATURES.length;
+  const totalSteps = TOTAL_VISIBLE_LABS;
   const totalNumStr = totalSteps < 10 ? `0${totalSteps}` : `${totalSteps}`;
 
   return (

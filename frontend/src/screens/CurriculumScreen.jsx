@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { CATEGORIES, FEATURES } from '../config/features';
+import { CATEGORIES, FEATURES, VISIBLE_CATEGORIES, VISIBLE_FEATURES, TOTAL_VISIBLE_LABS } from '../config/features';
 
 export default function CurriculumScreen({ onSelectStep }) {
   return (
@@ -16,12 +16,12 @@ export default function CurriculumScreen({ onSelectStep }) {
         {/* Delicate Metric / Scope Strip */}
         <div className="curriculum-stats-strip">
           <div className="curriculum-stat-item">
-            <span className="stat-number">{FEATURES.length}</span>
+            <span className="stat-number">{TOTAL_VISIBLE_LABS}</span>
             <span className="stat-label">Interactive Experiments</span>
           </div>
           <span className="curriculum-stat-divider" aria-hidden="true" />
           <div className="curriculum-stat-item">
-            <span className="stat-number">{CATEGORIES.length}</span>
+            <span className="stat-number">{VISIBLE_CATEGORIES.length}</span>
             <span className="stat-label">Thematic Chapters</span>
           </div>
           <span className="curriculum-stat-divider" aria-hidden="true" />
@@ -34,8 +34,8 @@ export default function CurriculumScreen({ onSelectStep }) {
 
       {/* Chapters / Sections List */}
       <div className="curriculum-chapters-list">
-        {CATEGORIES.map((cat, idx) => {
-          const catFeatures = FEATURES.filter((f) => f.category === cat.id);
+        {VISIBLE_CATEGORIES.map((cat, idx) => {
+          const catFeatures = VISIBLE_FEATURES.filter((f) => f.category === cat.id);
 
           return (
             <section key={cat.id} className="curriculum-chapter-section">

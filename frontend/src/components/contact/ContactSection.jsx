@@ -44,6 +44,16 @@ const CONTACT_EMAIL_OPTIONS = [
     description: 'Under Prof. Payal Wadhwa (IIIT Vadodara) for institutional research.',
     subject: '[MathLens Research] Academic Collaboration'
   },
+
+  {
+    id: 'team',
+    title: 'Development Team',
+    email: '202451113@iiitvadodara.ac.in',
+    badge: 'Devs',
+    icon: Code2,
+    description: 'Contact Naman Kumar, Mayank Soni, and Krishana Yadav.',
+    subject: '[MathLens Dev] Developer Contact'
+  },
   {
     id: 'bugs',
     title: 'Technical Bug Reports',
@@ -61,15 +71,6 @@ const CONTACT_EMAIL_OPTIONS = [
     icon: Sparkles,
     description: 'Suggest new matrix concepts, visual modules, or lesson plans.',
     subject: '[MathLens Feedback] Curriculum Suggestion'
-  },
-  {
-    id: 'team',
-    title: 'Development Team',
-    email: '202451113@iiitvadodara.ac.in',
-    badge: 'Devs',
-    icon: Code2,
-    description: 'Contact Naman Kumar, Mayank Soni, and Krishana Yadav.',
-    subject: '[MathLens Dev] Developer Contact'
   }
 ];
 

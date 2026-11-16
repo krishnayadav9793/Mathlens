@@ -9,7 +9,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { getFeatureByStep, FEATURES } from '../../config/features';
+import { getFeatureByStep, FEATURES, TOTAL_VISIBLE_LABS } from '../../config/features';
 
 /**
  * Navbar — Elegant Single-Row Top Navigation Bar
@@ -156,7 +156,7 @@ export default function Navbar({
               <PanelRight size={14} className="navbar-action-icon" aria-hidden="true" />
               <span className="navbar-btn-label">Modules</span>
               <span className="navbar-rail-pill">
-                {currentView === 'module' && activeFeature ? activeFeature.code : FEATURES.length}
+                {currentView === 'module' && activeFeature ? activeFeature.code : TOTAL_VISIBLE_LABS}
               </span>
             </button>
           )}

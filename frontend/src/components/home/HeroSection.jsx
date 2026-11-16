@@ -8,7 +8,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { FEATURES, CATEGORIES } from '../../config/features';
+import { FEATURES, CATEGORIES, VISIBLE_FEATURES, VISIBLE_CATEGORIES, TOTAL_VISIBLE_LABS } from '../../config/features';
 
 export default function HeroSection({
   onStartExploring,
@@ -58,7 +58,7 @@ export default function HeroSection({
   const filteredFeatures = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
-    return FEATURES.filter((feat) => {
+    return VISIBLE_FEATURES.filter((feat) => {
       // Category filter
       if (selectedCategory !== 'all' && feat.category !== selectedCategory) {
         return false;
@@ -93,11 +93,11 @@ export default function HeroSection({
   };
 
   const categoryChips = useMemo(() => [
-    { id: 'all', label: 'All', count: FEATURES.length },
-    ...CATEGORIES.map((cat) => ({
+    { id: 'all', label: 'All', count: TOTAL_VISIBLE_LABS },
+    ...VISIBLE_CATEGORIES.map((cat) => ({
       id: cat.id,
       label: cat.shortLabel || cat.label,
-      count: FEATURES.filter((f) => f.category === cat.id).length
+      count: VISIBLE_FEATURES.filter((f) => f.category === cat.id).length
     }))
   ], []);
 
@@ -123,7 +123,7 @@ export default function HeroSection({
 
           {/* Subheading */}
           <p className="hero-subheading">
-            Bridge the gap between abstract matrix equations and tangible digital pixels through {FEATURES.length} real-time visual laboratories. Discover intensity tensors, 2D coordinate mappings, eigenspaces, and matrix rank redundancy.
+            Bridge the gap between abstract matrix equations and tangible digital pixels through {TOTAL_VISIBLE_LABS} real-time visual laboratories. Discover intensity tensors, 2D coordinate mappings, and ray optics reflections.
           </p>
         </motion.div>
       </section>
@@ -265,7 +265,7 @@ export default function HeroSection({
                 className="empty-state-clear-btn"
                 onClick={handleClearSearch}
               >
-                Clear filters and view all {FEATURES.length} experiments
+                Clear filters and view all {TOTAL_VISIBLE_LABS} experiments
               </button>
             </div>
           )}
@@ -276,15 +276,15 @@ export default function HeroSection({
       <section className="hero-curriculum-overview">
         <div className="section-header-block">
           <span className="section-pre-tag">Core Curriculum</span>
-          <h2 className="section-headline">Five Foundations of Visual Linear Algebra</h2>
+          <h2 className="section-headline">Four Foundations of Visual Linear Algebra</h2>
           <p className="section-description">
             Structured learning tracks engineered to build intuitive and rigorous understanding of digital matrices.
           </p>
         </div>
 
         <div className="hero-pathways-grid">
-          {CATEGORIES.map((cat, idx) => {
-            const catFeatures = FEATURES.filter((f) => f.category === cat.id);
+          {VISIBLE_CATEGORIES.map((cat, idx) => {
+            const catFeatures = VISIBLE_FEATURES.filter((f) => f.category === cat.id);
             const CatIcon = cat.icon;
             const firstStep = catFeatures[0]?.stepNumber || 1;
 

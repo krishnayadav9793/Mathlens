@@ -10,7 +10,7 @@ import {
   Layers,
   ArrowRight
 } from 'lucide-react';
-import { FEATURES, CATEGORIES, getFeatureByStep } from '../../config/features';
+import { FEATURES, CATEGORIES, getFeatureByStep, VISIBLE_FEATURES, VISIBLE_CATEGORIES, TOTAL_VISIBLE_LABS } from '../../config/features';
 
 /**
  * RightNavRail — Integrated Right-Side Navigation Rail & Slide-Out Panel.
@@ -115,7 +115,7 @@ export default function RightNavRail({
   // Filter modules
   const filteredFeatures = useMemo(() => {
     const q = filterQuery.trim().toLowerCase();
-    return FEATURES.filter((feat) => {
+    return VISIBLE_FEATURES.filter((feat) => {
       if (selectedCategory !== 'all' && feat.category !== selectedCategory) {
         return false;
       }
@@ -132,11 +132,11 @@ export default function RightNavRail({
   }, [filterQuery, selectedCategory]);
 
   const categoryChips = useMemo(() => [
-    { id: 'all', label: 'All', count: FEATURES.length },
-    ...CATEGORIES.map((cat) => ({
+    { id: 'all', label: 'All', count: TOTAL_VISIBLE_LABS },
+    ...VISIBLE_CATEGORIES.map((cat) => ({
       id: cat.id,
       label: cat.shortLabel || cat.label,
-      count: FEATURES.filter((f) => f.category === cat.id).length
+      count: VISIBLE_FEATURES.filter((f) => f.category === cat.id).length
     }))
   ], []);
 
@@ -171,7 +171,7 @@ export default function RightNavRail({
                 <div className="rail-header-text">
                   <div className="rail-header-tagline">
                     <span className="rail-mini-badge">WORKSPACE RAIL</span>
-                    <span className="rail-count-badge">{FEATURES.length} Modules</span>
+                    <span className="rail-count-badge">{TOTAL_VISIBLE_LABS} Modules</span>
                   </div>
                   <h3 className="rail-title">Visual Laboratories</h3>
                 </div>

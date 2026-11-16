@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Check, Lock, ChevronRight } from 'lucide-react';
-import { CATEGORIES, FEATURES } from '../../config/features';
+import { CATEGORIES, FEATURES, VISIBLE_CATEGORIES, VISIBLE_FEATURES, TOTAL_VISIBLE_LABS } from '../../config/features';
 
 export default function FeatureSheet({
   isOpen,
@@ -12,7 +12,7 @@ export default function FeatureSheet({
 }) {
   const [search, setSearch] = useState('');
 
-  const filteredFeatures = FEATURES.filter(f => 
+  const filteredFeatures = VISIBLE_FEATURES.filter(f => 
     !search.trim() ||
     f.title.toLowerCase().includes(search.toLowerCase()) ||
     f.categoryLabel.toLowerCase().includes(search.toLowerCase()) ||
@@ -40,7 +40,7 @@ export default function FeatureSheet({
             <div className="mobile-sheet-header">
               <div>
                 <h3 className="mobile-sheet-title">All Mathematics Modules</h3>
-                <p className="mobile-sheet-sub">{FEATURES.length} interactive visual laboratories</p>
+                <p className="mobile-sheet-sub">{TOTAL_VISIBLE_LABS} interactive visual laboratories</p>
               </div>
               <button className="mobile-sheet-close-btn" onClick={onClose} aria-label="Close sheet">
                 <X size={18} />
@@ -61,7 +61,7 @@ export default function FeatureSheet({
 
             {/* Categories & Steps List */}
             <div className="mobile-sheet-scroll custom-scrollbar">
-              {CATEGORIES.map(cat => {
+              {VISIBLE_CATEGORIES.map(cat => {
                 const catFeatures = filteredFeatures.filter(f => f.category === cat.id);
                 if (catFeatures.length === 0) return null;
                 const CatIcon = cat.icon;

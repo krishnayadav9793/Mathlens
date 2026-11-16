@@ -37,7 +37,6 @@ export default function Footer({ onSelectStep, onSelectView }) {
               <li><button onClick={() => { onSelectStep(12); onSelectView('module'); }}>Determinant Visualizer</button></li>
               <li><button onClick={() => { onSelectStep(14); onSelectView('module'); }}>Matrix Inverse Zoom</button></li>
               <li><button onClick={() => { onSelectStep(17); onSelectView('module'); }}>Ray Optics</button></li>
-              <li><button onClick={() => { onSelectStep(18); onSelectView('module'); }}>Eigenvalues &amp; Eigenvectors</button></li>
             </ul>
           </div>
 

@@ -67,7 +67,8 @@ export const CATEGORIES = [
     shortLabel: 'Advanced',
     description: 'Finding invariant directions and natural scaling factors in transformations',
     icon: Variable,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   },
   {
     id: 'matrix-rank',
@@ -75,7 +76,8 @@ export const CATEGORIES = [
     shortLabel: 'Rank',
     description: 'How much independent information do images, force vectors, and sensor signals contain?',
     icon: Binary,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   },
   {
     id: 'linear-systems',
@@ -83,7 +85,8 @@ export const CATEGORIES = [
     shortLabel: 'Systems',
     description: 'Recover hidden images by inverting linear combinations, unmixing layers, and exploring matrix singularity',
     icon: Split,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   },
   {
     id: 'vector-norms',
@@ -91,7 +94,8 @@ export const CATEGORIES = [
     shortLabel: 'Norms',
     description: 'What is the length of a vector? Unit balls (diamond, circle, square), norm axioms, and image change metrics.',
     icon: Maximize2,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   },
   {
     id: 'qr-decomposition',
@@ -99,7 +103,8 @@ export const CATEGORIES = [
     shortLabel: 'QR Decomp',
     description: 'Perpendicular vectors, orthogonal projections, Gram-Schmidt process, and image factorisation A = QR',
     icon: Compass,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   },
   {
     id: 'qr-matrix-norms',
@@ -107,7 +112,8 @@ export const CATEGORIES = [
     shortLabel: 'QR Norms',
     description: 'Measuring numerical distance between QR code binary matrices with L1, L2, Lmax norms and error correction.',
     icon: QrCode,
-    color: 'var(--accent-primary, #C59B67)'
+    color: 'var(--accent-primary, #C59B67)',
+    hidden: true
   }
 ];
 
@@ -398,6 +404,7 @@ export const FEATURES = [
     stepNumber: 18,
     code: '18',
     slug: 'eigenvalues-eigenvectors',
+    hidden: true,
     title: 'Eigenvalues & Eigenvectors — Finding Special Directions',
     shortTitle: 'Eigenvectors & Values',
     category: 'eigen-spaces',
@@ -424,6 +431,7 @@ export const FEATURES = [
     stepNumber: 19,
     code: '19',
     slug: 'matrix-rank-information',
+    hidden: true,
     title: 'Rank of a Matrix — Information Redundancy in Images & Physics',
     shortTitle: 'Matrix Rank & Redundancy',
     category: 'matrix-rank',
@@ -451,6 +459,7 @@ export const FEATURES = [
     stepNumber: 20,
     code: '20',
     slug: 'linear-systems-unmixing',
+    hidden: true,
     title: 'System of Linear Equations — Recovering Hidden Images (AX = b)',
     shortTitle: 'Hidden Images (AX = b)',
     category: 'linear-systems',
@@ -479,6 +488,7 @@ export const FEATURES = [
     stepNumber: 21,
     code: '21',
     slug: 'vector-norms-image-distance',
+    hidden: true,
     title: 'Vector Norms — What is Vector Length & Measuring Image Distance',
     shortTitle: 'Vector Norms & Distances',
     category: 'vector-norms',
@@ -525,6 +535,7 @@ export const FEATURES = [
     stepNumber: 22,
     code: '22',
     slug: 'qr-decomposition-gram-schmidt',
+    hidden: true,
     title: 'QR Decomposition — Gram–Schmidt Orthogonalization & Image Reconstruction',
     shortTitle: 'QR Decomposition',
     category: 'qr-decomposition',
@@ -564,6 +575,7 @@ export const FEATURES = [
     stepNumber: 23,
     code: '23',
     slug: 'qr-matrix-norms',
+    hidden: true,
     title: 'How Different Are Two QR Codes? Exploring Matrix Norms',
     shortTitle: 'QR Matrix Norms',
     category: 'qr-matrix-norms',
@@ -603,7 +615,18 @@ export const FEATURES = [
   }
 ];
 
-export const TOTAL_ACTIVE_LABS = FEATURES.length;
+// Maximum currently active public step (website is scoped through Ray Optics: Step 17)
+export const MAX_VISIBLE_STEP = 17;
+
+export const VISIBLE_FEATURES = FEATURES.filter(f => !f.hidden && f.stepNumber <= MAX_VISIBLE_STEP);
+
+export const VISIBLE_CATEGORIES = CATEGORIES.filter(cat =>
+  !cat.hidden && VISIBLE_FEATURES.some(f => f.category === cat.id)
+);
+
+export const TOTAL_VISIBLE_LABS = VISIBLE_FEATURES.length; // 17
+
+export const TOTAL_ACTIVE_LABS = TOTAL_VISIBLE_LABS;
 
 export const COMING_SOON_TOPICS = [
     {

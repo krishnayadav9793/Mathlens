@@ -4,7 +4,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { getFeatureByStep, FEATURES } from '../../config/features';
+import { getFeatureByStep, FEATURES, TOTAL_VISIBLE_LABS } from '../../config/features';
 import { MODULE_DOCUMENTATION } from '../../data/moduleDocumentation';
 import ModuleDocumentation from '../experiment/ModuleDocumentation';
 
@@ -38,7 +38,7 @@ export default function StepWrapper({
   const doc = MODULE_DOCUMENTATION[stepNumber];
 
   const currentNumStr = stepNumber < 10 ? `0${stepNumber}` : `${stepNumber}`;
-  const totalSteps = FEATURES.length;
+  const totalSteps = TOTAL_VISIBLE_LABS;
   const totalNumStr = totalSteps < 10 ? `0${totalSteps}` : `${totalSteps}`;
 
   const cleanTitle = title || doc?.title || feature?.title;

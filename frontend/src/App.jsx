@@ -39,7 +39,7 @@ import Step22QRDecomposition from './steps/Step22QRDecomposition';
 import Step23QRMatrixNorms from './steps/Step23QRMatrixNorms';
 
 import { Analytics } from "@vercel/analytics/react"
-import { getFeatureByStep, FEATURES } from './config/features';
+import { getFeatureByStep, FEATURES, VISIBLE_FEATURES, MAX_VISIBLE_STEP, TOTAL_VISIBLE_LABS } from './config/features';
 import './index.css';
 import './App.css';
 
@@ -134,16 +134,18 @@ export default function App() {
     return 'home';
   });
 
-  // Current interactive step (1 to FEATURES.length)
+  // Current interactive step (1 to MAX_VISIBLE_STEP)
   const [currentStep, setCurrentStep] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const stepParam = params.get('step');
     if (stepParam) {
       const parsed = parseInt(stepParam, 10);
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= FEATURES.length) return parsed;
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= MAX_VISIBLE_STEP) return parsed;
+      if (!isNaN(parsed) && parsed > MAX_VISIBLE_STEP) return MAX_VISIBLE_STEP;
     }
     const saved = localStorage.getItem('mathlens_step');
-    return saved ? parseInt(saved, 10) : 1;
+    const parsedSaved = saved ? parseInt(saved, 10) : 1;
+    return parsedSaved > MAX_VISIBLE_STEP ? MAX_VISIBLE_STEP : parsedSaved;
   });
 
   // In-app navigation history stack for consistent Back button behaviour
@@ -167,7 +169,7 @@ export default function App() {
 
   const handleSelectStep = useCallback((step) => {
     const parsedStep = typeof step === 'number' ? step : parseInt(step, 10);
-    const validStep = !isNaN(parsedStep) ? parsedStep : 1;
+    const validStep = !isNaN(parsedStep) ? Math.max(1, Math.min(MAX_VISIBLE_STEP, parsedStep)) : 1;
     setCurrentStep(validStep);
     setCurrentView('module');
     setNavHistory(prev => [...prev, { view: 'module', step: validStep }]);
@@ -297,7 +299,7 @@ export default function App() {
         if (e.key === 'ArrowLeft' && currentStep > 1) {
           e.preventDefault();
           handleSelectStep(currentStep - 1);
-        } else if (e.key === 'ArrowRight' && currentStep < FEATURES.length) {
+        } else if (e.key === 'ArrowRight' && currentStep < MAX_VISIBLE_STEP) {
           e.preventDefault();
           handleSelectStep(currentStep + 1);
         }
